@@ -1,33 +1,57 @@
-import { useState } from 'react';
-import { Card, Table, Button, Typography, Tag, Space, Modal, Form, Input, InputNumber, message } from 'antd';
-import { PlusOutlined, EnvironmentOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
+import { Card, Table, Button, Typography, Tag, Space, Modal, Form, Input, InputNumber, message, Checkbox } from 'antd';
+import { PlusOutlined, EnvironmentOutlined, EditOutlined, DeleteOutlined, GlobalOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const { Title } = Typography;
 
 export default function SavedLocations() {
-    // Shared mock data (in a real app, this would come from an API context or Redux)
-    const [locations, setLocations] = useState([
-        { id: 1, label: 'Warehouse A - 123 Logistics Way', address: '123 Logistics Way, Ind. Park', lat: 12.9716, lng: 77.5946, contact: 'John Doe', phone: '9876543210' },
-        { id: 2, label: 'Factory B - 456 Manuf. Rd', address: '456 Manuf. Rd, Ind. Zone', lat: 13.0827, lng: 80.2707, contact: 'Jane Smith', phone: '9123456780' },
-        { id: 3, label: 'Office HQ - 789 Corp Blvd', address: '789 Corp Blvd, City Center', lat: 28.7041, lng: 77.1025, contact: 'Admin', phone: '9988776655' },
-    ]);
-
+    const { token, user } = useAuth();
+    const [locations, setLocations] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
     const [editingId, setEditingId] = useState(null);
 
-    const handleAddEdit = (values) => {
-        if (editingId) {
-            setLocations(locations.map(loc => loc.id === editingId ? { ...loc, ...values } : loc));
-            message.success('Location updated successfully');
-        } else {
-            const newLoc = { ...values, id: Date.now() }; // Mock ID
-            setLocations([...locations, newLoc]);
-            message.success('Location added successfully');
+    const headers = { Authorization: `Bearer ${token}` };
+
+    const fetchLocations = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`${API}/addresses`, { headers });
+            setLocations(res.data);
+        } catch (error) {
+            message.error('Failed to load locations');
         }
-        setIsModalOpen(false);
-        form.resetFields();
-        setEditingId(null);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchLocations();
+    }, []);
+
+    const handleAddEdit = async (values) => {
+        try {
+            if (editingId) {
+                // Editing not fully supported by backend yet (only create/delete), 
+                // but if we added PUT it would go here. For now, we'll just re-create or show error.
+                // Assuming we might add PUT later, but current task only asked for Create/List/Delete logic in snippets.
+                // Let's implement CREATE for now as user asked to "add locations".
+                message.info('Editing is not supported yet, please delete and re-create.');
+            } else {
+                await axios.post(`${API}/addresses`, values, { headers });
+                message.success('Location added successfully');
+            }
+            setIsModalOpen(false);
+            form.resetFields();
+            setEditingId(null);
+            fetchLocations();
+        } catch (error) {
+            message.error('Operation failed');
+        }
     };
 
     const openEdit = (record) => {
@@ -39,31 +63,51 @@ export default function SavedLocations() {
     const handleDelete = (id) => {
         Modal.confirm({
             title: 'Are you sure?',
-            content: 'This location will be removed from your saved list.',
-            onOk: () => {
-                setLocations(locations.filter(l => l.id !== id));
-                message.success('Location deleted');
+            content: 'This location will be removed.',
+            onOk: async () => {
+                try {
+                    await axios.delete(`${API}/addresses/${id}`, { headers });
+                    message.success('Location deleted');
+                    fetchLocations();
+                } catch (error) {
+                    message.error('Failed to delete location');
+                }
             }
         });
     };
 
     const columns = [
-        { title: 'Label', dataIndex: 'label', key: 'label', render: t => <span style={{ fontWeight: 500 }}>{t}</span> },
+        { 
+            title: 'Label', key: 'label', 
+            render: (_, r) => (
+                <Space>
+                    <span style={{ fontWeight: 500 }}>{r.label}</span>
+                    {r.is_global && <Tag color="blue" icon={<GlobalOutlined />}>Global</Tag>}
+                </Space>
+            ) 
+        },
         { title: 'Address', dataIndex: 'address', key: 'address' },
         {
             title: 'Coordinates', key: 'coords',
-            render: (_, r) => <Tag icon={<EnvironmentOutlined />}>{r.lat.toFixed(4)}, {r.lng.toFixed(4)}</Tag>
+            render: (_, r) => r.lat && r.lng ? (
+                <Tag icon={<EnvironmentOutlined />}>{r.lat.toFixed(4)}, {r.lng.toFixed(4)}</Tag>
+            ) : <span style={{ color: '#ccc' }}>N/A</span>
         },
-        { title: 'Contact', dataIndex: 'contact', key: 'contact' },
-        { title: 'Phone', dataIndex: 'phone', key: 'phone' },
         {
             title: 'Actions', key: 'actions',
-            render: (_, r) => (
-                <Space>
-                    <Button icon={<EditOutlined />} size="small" onClick={() => openEdit(r)} />
-                    <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(r.id)} />
-                </Space>
-            )
+            render: (_, r) => {
+                // Allow delete if owner OR admin
+                // (Models enforcement: admins can delete global, users can delete own)
+                // We'll trust backend to reject if not allowed, but UI can hide if needed.
+                // For now, show buttons for all, backend handles auth.
+                return (
+                    <Space>
+                        {/* <Button icon={<EditOutlined />} size="small" onClick={() => openEdit(r)} disabled={r.is_global && user.role !== 'SUPER_ADMIN'} /> */}
+                        <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(r.id)} 
+                            disabled={r.is_global && user.role !== 'SUPER_ADMIN'} />
+                    </Space>
+                );
+            }
         }
     ];
 
@@ -81,7 +125,8 @@ export default function SavedLocations() {
                     columns={columns}
                     dataSource={locations}
                     rowKey="id"
-                    pagination={false}
+                    loading={loading}
+                    pagination={{ pageSize: 10 }}
                 />
             </Card>
 
@@ -114,6 +159,13 @@ export default function SavedLocations() {
                             <Input style={{ width: 140 }} />
                         </Form.Item>
                     </Space>
+                    
+                    {user?.role === 'SUPER_ADMIN' && (
+                        <Form.Item name="is_global" valuePropName="checked">
+                            <Checkbox>Share with everyone (Global)</Checkbox>
+                        </Form.Item>
+                    )}
+
                     <div style={{ textAlign: 'right', marginTop: 16 }}>
                         <Button onClick={() => setIsModalOpen(false)} style={{ marginRight: 8 }}>Cancel</Button>
                         <Button type="primary" htmlType="submit">Save Location</Button>

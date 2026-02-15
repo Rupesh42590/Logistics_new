@@ -75,10 +75,21 @@ export default function MSMEDashboard() {
     const handleCreate = async (values) => {
         setCreating(true);
         try {
+            const qty = values.item_qty || 1;
+            const weight = values.item_weight || 0;
+            const length = values.item_length || 0;
+            const width = values.item_width || 0;
+            const height = values.item_height || 0;
+
+            const itemVolume = length * width * height;
+            const totalVolume = itemVolume * qty;
+            const totalWeight = weight * qty;
+
             const items = values.item_name ? [{
                 name: values.item_name,
-                quantity: values.item_qty || 1,
-                weight: values.item_weight || 0,
+                quantity: qty,
+                weight: weight,
+                length, width, height
             }] : [];
 
             await axios.post(`${API}/shipments`, {
@@ -88,8 +99,8 @@ export default function MSMEDashboard() {
                 drop_address: values.drop_address,
                 drop_contact: values.drop_contact,
                 drop_phone: values.drop_phone,
-                total_weight: values.total_weight || 0,
-                total_volume: values.total_volume || 0,
+                total_weight: totalWeight,
+                total_volume: totalVolume,
                 description: values.description,
                 special_instructions: values.special_instructions,
                 items,
@@ -113,6 +124,16 @@ export default function MSMEDashboard() {
         {
             title: 'Tracking #', dataIndex: 'tracking_number', key: 'tracking_number',
             render: (t, r) => <a onClick={() => navigate(r.id.toString())}>{t}</a>
+        },
+        {
+            title: 'Item', dataIndex: 'items', key: 'items',
+            render: (items) => (
+                <Space direction="vertical" size={0}>
+                    {items?.length > 0 ? items.map(i => (
+                        <Text key={i.id} style={{ fontSize: 13 }}>{i.name}</Text>
+                    )) : <Text type="secondary">-</Text>}
+                </Space>
+            )
         },
         { title: 'Pickup', dataIndex: 'pickup_address', key: 'pickup', ellipsis: true },
         { title: 'Drop', dataIndex: 'drop_address', key: 'drop', ellipsis: true },
@@ -212,19 +233,22 @@ export default function MSMEDashboard() {
                     <Divider orientation="left" plain>Cargo Details</Divider>
                     <Row gutter={16}>
                         <Col span={8}>
-                            <Form.Item name="total_weight" label="Total Weight (kg)"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
-                        </Col>
-                        <Col span={8}>
-                            <Form.Item name="total_volume" label="Volume (m³)"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
-                        </Col>
-                        <Col span={8}>
                             <Form.Item name="item_name" label="Item Name"><Input /></Form.Item>
                         </Col>
                         <Col span={8}>
                             <Form.Item name="item_qty" label="Qty"><InputNumber min={1} style={{ width: '100%' }} /></Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item name="item_weight" label="Item Weight"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+                            <Form.Item name="item_weight" label="Item Weight (kg)"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="item_length" label="Length (m)"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="item_width" label="Width (m)"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="item_height" label="Height (m)"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
                         </Col>
                     </Row>
 

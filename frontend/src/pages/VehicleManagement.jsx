@@ -7,7 +7,7 @@ import axios from 'axios';
 const { Title, Text } = Typography;
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const STATUS_COLORS = { AVAILABLE: 'green', ON_TRIP: 'blue', MAINTENANCE: 'orange', INACTIVE: 'default' };
+const STATUS_COLORS = { AVAILABLE: 'default', ON_TRIP: 'default', MAINTENANCE: 'default', INACTIVE: 'default' };
 const TYPE_LABELS = { TRUCK: 'Truck', VAN: 'Van', PICKUP: 'Pickup', FLATBED: 'Flatbed', CONTAINER: 'Container' };
 
 // Filter Section
@@ -48,7 +48,7 @@ const FilterSection = ({ onFilter }) => {
 export default function VehicleManagement() {
     const { token } = useAuth();
     const [vehicles, setVehicles] = useState([]);
-    const [zones, setZones] = useState([]);
+
     const [drivers, setDrivers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -64,13 +64,11 @@ export default function VehicleManagement() {
             if (filters.status && filters.status.length) filters.status.forEach(s => params.append('status', s));
             if (filters.overloaded_check) params.append('overloaded', 'true');
 
-            const [vRes, zRes, uRes] = await Promise.all([
+            const [vRes, uRes] = await Promise.all([
                 axios.get(`${API}/vehicles?${params.toString()}`, { headers }),
-                axios.get(`${API}/zones`, { headers }),
                 axios.get(`${API}/users`, { headers }),
             ]);
             setVehicles(vRes.data);
-            setZones(zRes.data);
             setDrivers(uRes.data.filter(u => u.role === 'DRIVER'));
         } catch { message.error('Failed to load data'); }
         setLoading(false);
@@ -140,10 +138,7 @@ export default function VehicleManagement() {
                 );
             },
         },
-        {
-            title: 'Zone', dataIndex: 'zone_id', key: 'zone',
-            render: zid => zones.find(z => z.id === zid)?.name || '-'
-        },
+
         {
             title: 'Driver', dataIndex: 'current_driver_id', key: 'driver',
             render: did => drivers.find(d => d.id === did)?.name || '-'
@@ -169,7 +164,7 @@ export default function VehicleManagement() {
                     dataSource={vehicles}
                     rowKey="id"
                     loading={loading}
-                    pagination={{ pageSize: 10, showSizeChanger: true }}
+                    pagination={false}
                     size="middle"
                     scroll={{ x: 1100 }}
                 />
@@ -200,11 +195,24 @@ export default function VehicleManagement() {
                             <InputNumber min={0} style={{ width: '100%' }} />
                         </Form.Item>
                     </Space>
-                    <Form.Item name="zone_id" label="Assigned Zone">
-                        <Select allowClear placeholder="Select zone" options={zones.map(z => ({ value: z.id, label: z.name }))} />
-                    </Form.Item>
+
                     <Form.Item name="current_driver_id" label="Assigned Driver">
-                        <Select allowClear placeholder="Select driver" options={drivers.map(d => ({ value: d.id, label: `${d.name} (${d.email})` }))} />
+                        <Select allowClear placeholder="Select driver" options={
+                            drivers.map(d => {
+                                // Check if driver is assigned to ANY vehicle
+                                const assignedVehicle = vehicles.find(v => v.current_driver_id === d.id);
+                                // Enable if:
+                                // 1. Driver is not assigned to any vehicle
+                                // 2. Driver is assigned to THIS vehicle (editing mode)
+                                const isAssignedToOther = assignedVehicle && assignedVehicle.id !== editingVehicle?.id;
+                                
+                                return {
+                                    value: d.id,
+                                    label: `${d.name} (${d.email}) ${isAssignedToOther ? `[Assigned to ${assignedVehicle.plate_number}]` : ''}`,
+                                    disabled: isAssignedToOther
+                                };
+                            })
+                        } />
                     </Form.Item>
                     {editingVehicle && (
                         <Form.Item name="status" label="Status">

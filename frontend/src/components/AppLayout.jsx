@@ -23,6 +23,7 @@ import {
   SettingOutlined,
   HistoryOutlined,
   BankOutlined,
+  CompassOutlined,
 } from '@ant-design/icons';
 
 const { Sider, Content, Header } = Layout;
@@ -62,15 +63,11 @@ const getMenuItems = (role) => {
       return [
         { key: '/admin', icon: <DashboardOutlined />, label: <Link to="/admin">Dashboard</Link> },
         { type: 'divider' },
-        {
-          key: 'enterprise-group', label: 'Enterprise Operations', type: 'group', children: [
-            { key: '/admin/operations', icon: <AimOutlined />, label: <Link to="/admin/operations">Operations</Link> },
-            { key: '/admin/shipments', icon: <SendOutlined />, label: <Link to="/admin/shipments">Shipments</Link> },
-            { key: '/admin/vehicles', icon: <CarOutlined />, label: <Link to="/admin/vehicles">Vehicles</Link> },
-            { key: '/admin/zones', icon: <EnvironmentOutlined />, label: <Link to="/admin/zones">Zones</Link> },
-            { key: '/admin/analytics', icon: <FundOutlined />, label: <Link to="/admin/analytics">Analytics</Link> },
-          ]
-        },
+        { key: '/admin/operations', icon: <AimOutlined />, label: <Link to="/admin/operations">Operations</Link> },
+        { key: '/admin/shipments', icon: <SendOutlined />, label: <Link to="/admin/shipments">Shipments</Link> },
+        { key: '/admin/locations', icon: <EnvironmentOutlined />, label: <Link to="/admin/locations">Saved Locations</Link> },
+        { key: '/admin/vehicles', icon: <CarOutlined />, label: <Link to="/admin/vehicles">Vehicles</Link> },
+        { key: '/admin/analytics', icon: <FundOutlined />, label: <Link to="/admin/analytics">Analytics</Link> },
         { type: 'divider' },
         { key: '/admin/reports', icon: <BarChartOutlined />, label: <Link to="/admin/reports">Reports</Link> },
         { key: '/admin/users', icon: <TeamOutlined />, label: <Link to="/admin/users">Users</Link> },
@@ -98,7 +95,6 @@ const getMenuItems = (role) => {
         { key: '/fleet/operations', icon: <AimOutlined />, label: <Link to="/fleet/operations">Operations</Link> },
         { key: '/fleet/shipments', icon: <SendOutlined />, label: <Link to="/fleet/shipments">Shipments</Link> },
         { key: '/fleet/vehicles', icon: <CarOutlined />, label: <Link to="/fleet/vehicles">Vehicles</Link> },
-        { key: '/fleet/zones', icon: <EnvironmentOutlined />, label: <Link to="/fleet/zones">Zones</Link> },
         { key: '/fleet/analytics', icon: <FundOutlined />, label: <Link to="/fleet/analytics">Analytics</Link> },
         { key: '/fleet/reports', icon: <BarChartOutlined />, label: <Link to="/fleet/reports">Reports</Link> },
         { type: 'divider' },

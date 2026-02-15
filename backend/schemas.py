@@ -375,6 +375,7 @@ class SavedAddressCreate(BaseModel):
     address: str
     lat: Optional[float] = None
     lng: Optional[float] = None
+    is_global: bool = False
 
 class SavedAddressResponse(SavedAddressCreate):
     id: int

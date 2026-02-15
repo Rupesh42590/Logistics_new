@@ -13,7 +13,9 @@ engine = create_async_engine(DATABASE_URL, echo=False)
 
 async def fix_enums():
     enums_to_add = {
+
         "userrole": ["MSME", "DRIVER", "FLEET_MANAGER"],
+        
     }
     
     async with engine.begin() as conn:

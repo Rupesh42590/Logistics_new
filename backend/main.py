@@ -24,6 +24,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="Plant Inbound Logistics")
 
+@app.get("/")
+def read_root():
+    return {"status": "ok", "message": "Backend is running"}
+
 # --- CORS ---
 app.add_middleware(
     CORSMiddleware,
@@ -1061,6 +1065,26 @@ async def manual_assign_shipment(
     if remaining_weight < shipment.total_weight or remaining_volume < shipment.total_volume:
         raise HTTPException(400, f"Vehicle capacity exceeded. Remaining: {remaining_weight}kg / {remaining_volume}m³")
 
+    # If reassignment: restore capacity to old vehicle
+    if shipment.assigned_vehicle_id:
+        old_veh_res = await db.execute(select(models.Vehicle).where(models.Vehicle.id == shipment.assigned_vehicle_id))
+        old_vehicle = old_veh_res.scalars().first()
+        if old_vehicle:
+            old_vehicle.current_weight_used = max(0, old_vehicle.current_weight_used - shipment.total_weight)
+            old_vehicle.current_volume_used = max(0, old_vehicle.current_volume_used - shipment.total_volume)
+            # Check if old vehicle becomes empty/available
+            active_count = await db.execute(
+                select(func.count(models.Shipment.id)).where(
+                    models.Shipment.assigned_vehicle_id == old_vehicle.id,
+                    models.Shipment.status.in_([
+                        models.ShipmentStatus.ASSIGNED, models.ShipmentStatus.PICKED_UP, models.ShipmentStatus.IN_TRANSIT
+                    ]),
+                    models.Shipment.id != shipment.id # Exclude current shipment
+                )
+            )
+            if active_count.scalar() == 0:
+                old_vehicle.status = models.VehicleStatus.AVAILABLE
+
     shipment.assigned_vehicle_id = req.vehicle_id
     shipment.assigned_driver_id = req.driver_id
     shipment.status = models.ShipmentStatus.ASSIGNED
@@ -1343,6 +1367,11 @@ async def create_vehicle(
     if existing.scalars().first():
         raise HTTPException(400, "Vehicle with this plate number already exists")
 
+    if req.current_driver_id:
+        driver_check = await db.execute(select(models.Vehicle).where(models.Vehicle.current_driver_id == req.current_driver_id))
+        if driver_check.scalars().first():
+             raise HTTPException(400, "Driver is already assigned to another vehicle")
+
     vehicle = models.Vehicle(
         name=req.name,
         plate_number=req.plate_number,
@@ -1400,6 +1429,13 @@ async def update_vehicle(
         raise HTTPException(404, "Vehicle not found")
 
     for field, value in req.dict(exclude_unset=True).items():
+        if field == 'current_driver_id' and value is not None:
+             driver_check = await db.execute(select(models.Vehicle).where(
+                 models.Vehicle.current_driver_id == value,
+                 models.Vehicle.id != id
+             ))
+             if driver_check.scalars().first():
+                 raise HTTPException(400, "Driver is already assigned to another vehicle")
         setattr(vehicle, field, value)
 
     await db.commit()
@@ -1818,12 +1854,18 @@ async def create_saved_address(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
+    # Only admins can set is_global=True
+    is_global = req.is_global
+    if is_global and user.role != models.UserRole.SUPER_ADMIN:
+        is_global = False
+
     addr = models.SavedAddress(
         user_id=user.id,
         label=req.label,
         address=req.address,
         lat=req.lat,
         lng=req.lng,
+        is_global=is_global
     )
     db.add(addr)
     await db.commit()
@@ -1836,10 +1878,13 @@ async def list_saved_addresses(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    result = await db.execute(
-        select(models.SavedAddress).where(models.SavedAddress.user_id == user.id)
-        .order_by(models.SavedAddress.created_at.desc())
-    )
+    query = select(models.SavedAddress).where(
+        or_(
+            models.SavedAddress.user_id == user.id,
+            models.SavedAddress.is_global == True
+        )
+    ).order_by(models.SavedAddress.created_at.desc())
+    result = await db.execute(query)
     return result.scalars().all()
 
 
@@ -1849,14 +1894,16 @@ async def delete_saved_address(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    result = await db.execute(
-        select(models.SavedAddress).where(
-            models.SavedAddress.id == id, models.SavedAddress.user_id == user.id
-        )
-    )
+    result = await db.execute(select(models.SavedAddress).where(models.SavedAddress.id == id))
     addr = result.scalars().first()
     if not addr:
         raise HTTPException(404, "Address not found")
+
+    # Allow delete if owner OR (admin and is_global)
+    if addr.user_id != user.id:
+         if not (user.role == models.UserRole.SUPER_ADMIN and addr.is_global):
+            raise HTTPException(403, "Not authorized to delete this address")
+
     await db.delete(addr)
     await db.commit()
     return {"message": "Address deleted"}

@@ -23,6 +23,7 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import DriverHistory from './pages/DriverHistory';
 import SavedLocations from './pages/SavedLocations';
+import RouteTracking from './pages/RouteTracking';
 
 import DeliveryReceipt from './pages/DeliveryReceipt';
 import { AuthProvider } from './context/AuthContext';
@@ -62,6 +63,8 @@ function App() {
                       <Route path="reports" element={<Reports />} />
                       <Route path="shipments" element={<MyShipments />} />
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
+                      <Route path="locations" element={<SavedLocations />} />
+                      <Route path="track/:id" element={<RouteTracking />} />
                       <Route path="settings" element={<Settings />} />
                     </Routes>
                   </AppLayout>
@@ -77,6 +80,7 @@ function App() {
                       <Route path="shipments" element={<MyShipments />} />
                       <Route path="locations" element={<SavedLocations />} />
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
+                      <Route path="track/:id" element={<RouteTracking />} />
                       <Route path="settings" element={<Settings />} />
                     </Routes>
                   </AppLayout>
@@ -90,6 +94,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<DriverDashboard />} />
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
+                      <Route path="track/:id" element={<RouteTracking />} />
                       <Route path="history" element={<DriverHistory />} />
                       <Route path="settings" element={<Settings />} />
                     </Routes>
@@ -110,6 +115,7 @@ function App() {
                       <Route path="reports" element={<Reports />} />
                       <Route path="shipments" element={<MyShipments />} />
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
+                      <Route path="track/:id" element={<RouteTracking />} />
                       <Route path="settings" element={<Settings />} />
                     </Routes>
                   </AppLayout>

@@ -126,7 +126,8 @@ export default function Login() {
 
                 {error && (
                     <Alert
-                        message={error}
+                        message="Error"
+                        description={error}
                         type="error"
                         showIcon
                         style={{ marginBottom: 24 }}

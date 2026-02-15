@@ -124,41 +124,9 @@ export default function ShipmentDetail() {
             </div>
 
             <Row gutter={[24, 24]}>
-                <Col xs={24} lg={16}>
-                    <Card title="Shipment Details" bordered={false} style={{ marginBottom: 24 }}>
-                        <Descriptions column={{ xs: 1, sm: 2 }} size="small" bordered>
-                            <Descriptions.Item label="Tracking #">{shipment.tracking_number}</Descriptions.Item>
-                            <Descriptions.Item label="Status">
-                                <Tag color={STATUS_COLORS[shipment.status]}>{shipment.status}</Tag>
-                            </Descriptions.Item>
-                            <Descriptions.Item label="Pickup Address" span={2}>{shipment.pickup_address}</Descriptions.Item>
-                            <Descriptions.Item label="Pickup Contact">{shipment.pickup_contact || '-'}</Descriptions.Item>
-                            <Descriptions.Item label="Pickup Phone">{shipment.pickup_phone || '-'}</Descriptions.Item>
-                            <Descriptions.Item label="Drop Address" span={2}>{shipment.drop_address}</Descriptions.Item>
-                            <Descriptions.Item label="Drop Contact">{shipment.drop_contact || '-'}</Descriptions.Item>
-                            <Descriptions.Item label="Drop Phone">{shipment.drop_phone || '-'}</Descriptions.Item>
-                            <Descriptions.Item label="Total Weight">{shipment.total_weight} kg</Descriptions.Item>
-                            <Descriptions.Item label="Total Volume">{shipment.total_volume} m³</Descriptions.Item>
-                            <Descriptions.Item label="Description" span={2}>{shipment.description || '-'}</Descriptions.Item>
-                            <Descriptions.Item label="Instructions" span={2}>{shipment.special_instructions || '-'}</Descriptions.Item>
-                        </Descriptions>
-                    </Card>
-
-                    {shipment.items?.length > 0 && (
-                        <Card title={`Items (${shipment.items.length})`} bordered={false} style={{ marginBottom: 24 }}>
-                            {shipment.items.map((item, i) => (
-                                <div key={item.id} style={{ padding: '8px 0', borderBottom: i < shipment.items.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                                    <Text strong>{item.name}</Text>
-                                    <Text type="secondary" style={{ marginLeft: 12 }}>Qty: {item.quantity} · Weight: {item.weight} kg</Text>
-                                    {item.description && <div><Text type="secondary">{item.description}</Text></div>}
-                                </div>
-                            ))}
-                        </Card>
-                    )}
-                </Col>
-
-                <Col xs={24} lg={8}>
-                    <Card title="Timeline" bordered={false}>
+                {/* 1. Timeline & Assignment (Side by Side) */}
+                <Col xs={24} lg={12}>
+                    <Card title="Timeline" bordered={false} style={{ height: '100%' }}>
                         <Timeline
                             items={(shipment.timeline || [])
                                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
@@ -179,17 +147,67 @@ export default function ShipmentDetail() {
                             <Text type="secondary">No timeline entries yet.</Text>
                         )}
                     </Card>
+                </Col>
 
-                    <Card title="Assignment" bordered={false} style={{ marginTop: 16 }}>
-                        <Descriptions column={1} size="small">
+                <Col xs={24} lg={12}>
+                    <Card title="Assignment" bordered={false} style={{ height: '100%' }}>
+                        <Descriptions column={1} size="small" bordered>
                             <Descriptions.Item label="Vehicle">{shipment.assigned_vehicle_id ? `Vehicle #${shipment.assigned_vehicle_id}` : 'Not assigned'}</Descriptions.Item>
                             <Descriptions.Item label="Driver">{shipment.assigned_driver_id ? `Driver #${shipment.assigned_driver_id}` : 'Not assigned'}</Descriptions.Item>
                             <Descriptions.Item label="Zone">{shipment.zone_id ? `Zone #${shipment.zone_id}` : 'Not assigned'}</Descriptions.Item>
-                            <Descriptions.Item label="Created">{new Date(shipment.created_at).toLocaleString()}</Descriptions.Item>
                             {shipment.assigned_at && <Descriptions.Item label="Assigned">{new Date(shipment.assigned_at).toLocaleString()}</Descriptions.Item>}
                             {shipment.delivered_at && <Descriptions.Item label="Delivered">{new Date(shipment.delivered_at).toLocaleString()}</Descriptions.Item>}
+                             <Descriptions.Item label="Special Instructions">{shipment.special_instructions || '-'}</Descriptions.Item>
                         </Descriptions>
                     </Card>
+                </Col>
+
+                {/* 2. Shipment Details (Full Width) */}
+                <Col span={24}>
+                    <Card title="Shipment Details" bordered={false}>
+                        <Descriptions layout="vertical" column={{ xs: 1, sm: 2, lg: 4 }} size="small" bordered>
+                            <Descriptions.Item label="Tracking #">{shipment.tracking_number}</Descriptions.Item>
+                            <Descriptions.Item label="Status">
+                                <Tag color={STATUS_COLORS[shipment.status]}>{shipment.status}</Tag>
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Created">{new Date(shipment.created_at).toLocaleString()}</Descriptions.Item>
+                            <Descriptions.Item label="Total Weight">{shipment.total_weight} kg</Descriptions.Item>
+
+                            <Descriptions.Item label="Pickup Address">{shipment.pickup_address}</Descriptions.Item>
+                            <Descriptions.Item label="Pickup Contact">{shipment.pickup_contact || '-'}</Descriptions.Item>
+                            <Descriptions.Item label="Pickup Phone">{shipment.pickup_phone || '-'}</Descriptions.Item>
+                            <Descriptions.Item label="Total Volume">{shipment.total_volume} m³</Descriptions.Item>
+                            
+                            <Descriptions.Item label="Drop Address">{shipment.drop_address}</Descriptions.Item>
+                            <Descriptions.Item label="Drop Contact">{shipment.drop_contact || '-'}</Descriptions.Item>
+                            <Descriptions.Item label="Drop Phone">{shipment.drop_phone || '-'}</Descriptions.Item>
+                            <Descriptions.Item label="Description">{shipment.description || '-'}</Descriptions.Item>
+                        </Descriptions>
+                    </Card>
+                </Col>
+
+                {/* 3. Items (Full Width) */}
+                <Col span={24}>
+                     {shipment.items?.length > 0 ? (
+                        <Card title={`Items (${shipment.items.length})`} bordered={false}>
+                            <Row gutter={[16, 16]}>
+                                {shipment.items.map((item, i) => (
+                                    <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
+                                        <Card type="inner" size="small" style={{ background: '#fafafa' }}>
+                                            <div style={{ fontWeight: 600, marginBottom: 4 }}>{item.name}</div>
+                                            <div style={{ fontSize: 13, color: '#666' }}>
+                                                Qty: {item.quantity} <br/>
+                                                Weight: {item.weight} kg
+                                            </div>
+                                            {item.description && <div style={{ fontSize: 12, color: '#999', marginTop: 4 }}>{item.description}</div>}
+                                        </Card>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </Card>
+                    ) : (
+                        <Card title="Items" bordered={false}><Text type="secondary">No items found.</Text></Card>
+                    )}
                 </Col>
             </Row>
 

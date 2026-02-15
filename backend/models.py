@@ -352,6 +352,7 @@ class SavedAddress(Base):
     address = Column(String, nullable=False)
     lat = Column(Float, nullable=True)
     lng = Column(Float, nullable=True)
+    is_global = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User")

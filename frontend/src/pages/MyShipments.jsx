@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Table, Tag, Typography, Button, message, Card } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Table, Tag, Typography, Button, message, Card, Modal, Select } from 'antd';
+import { EyeOutlined, CompassOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AdvancedFilterBar from '../components/AdvancedFilterBar';
@@ -10,8 +10,8 @@ const { Title } = Typography;
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const STATUS_COLORS = {
-    PENDING: 'gold', ASSIGNED: 'blue', PICKED_UP: 'cyan',
-    IN_TRANSIT: 'processing', DELIVERED: 'green', CONFIRMED: 'success', CANCELLED: 'red',
+    PENDING: 'default', ASSIGNED: 'default', PICKED_UP: 'default',
+    IN_TRANSIT: 'default', DELIVERED: 'default', CONFIRMED: 'default', CANCELLED: 'default',
 };
 
 const STATUS_OPTIONS = [
@@ -30,6 +30,13 @@ export default function MyShipments() {
     const [shipments, setShipments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({});
+    
+    // Bulk Assignment State
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [vehicles, setVehicles] = useState([]);
+    const [selectedVehicle, setSelectedVehicle] = useState(null);
+    const [assigning, setAssigning] = useState(false);
 
     const headers = { Authorization: `Bearer ${token}` };
     const basePath = user?.role === 'MSME' ? '/msme' : user?.role === 'DRIVER' ? '/driver' : user?.role === 'FLEET_MANAGER' ? '/fleet' : '/admin';
@@ -61,9 +68,80 @@ export default function MyShipments() {
         }
     }, [token]);
 
+    const fetchVehicles = useCallback(async () => {
+        if (['SUPER_ADMIN', 'FLEET_MANAGER'].includes(user?.role)) {
+            try {
+                const res = await axios.get(`${API}/vehicles`, { headers });
+                setVehicles(res.data);
+            } catch (err) {
+                console.error("Failed to load vehicles");
+            }
+        }
+    }, [user, token]);
+
     useEffect(() => {
         fetchShipments(filters);
-    }, [fetchShipments]); // filters dependency removed to avoid loop if object changes, but we call fetch on filter change
+        fetchVehicles();
+    }, [fetchShipments, fetchVehicles]); 
+
+    const onSelectChange = (newSelectedRowKeys) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+        getCheckboxProps: (record) => ({
+            disabled: !['PENDING', 'ASSIGNED'].includes(record.status), // Allow pending and assigned
+        }),
+    };
+
+    const handleBulkAssign = async () => {
+        if (!selectedVehicle) {
+            message.error("Please select a vehicle");
+            return;
+        }
+
+        const vehicle = vehicles.find(v => v.id === selectedVehicle);
+        if (!vehicle) return;
+
+        if (!vehicle.current_driver_id) {
+            message.error("Selected vehicle does not have an assigned driver. Please assign a driver to the vehicle first.");
+            return;
+        }
+
+        setAssigning(true);
+        let successCount = 0;
+        let failCount = 0;
+
+        try {
+            await Promise.all(selectedRowKeys.map(async (shipmentId) => {
+                try {
+                    await axios.post(`${API}/shipments/${shipmentId}/assign`, {
+                        vehicle_id: vehicle.id,
+                        driver_id: vehicle.current_driver_id
+                    }, { headers });
+                    successCount++;
+                } catch (error) {
+                    console.error(`Failed to assign shipment ${shipmentId}`, error);
+                    failCount++;
+                }
+            }));
+
+            if (successCount > 0) message.success(`Successfully assigned ${successCount} shipments`);
+            if (failCount > 0) message.error(`Failed to assign ${failCount} shipments`);
+            
+            setIsModalOpen(false);
+            setSelectedRowKeys([]);
+            setSelectedVehicle(null);
+            fetchShipments(filters);
+            fetchVehicles(); // Update vehicle capacities
+        } catch (error) {
+            message.error("Bulk assignment failed");
+        } finally {
+            setAssigning(false);
+        }
+    };
 
     const handleFilter = (newFilters) => {
         setFilters(newFilters);
@@ -74,6 +152,16 @@ export default function MyShipments() {
         {
             title: 'Tracking #', dataIndex: 'tracking_number', key: 'tracking',
             render: (t, r) => <a onClick={() => navigate(`${basePath}/shipments/${r.id}`)}>{t}</a>
+        },
+        {
+            title: 'Item', dataIndex: 'items', key: 'items',
+            render: (items) => (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {items?.length > 0 ? items.map(i => (
+                        <span key={i.id} style={{ fontSize: 13 }}>{i.name}</span>
+                    )) : <span style={{ color: '#999' }}>-</span>}
+                </div>
+            )
         },
         { title: 'Pickup', dataIndex: 'pickup_address', key: 'pickup', ellipsis: true, width: 200 },
         { title: 'Drop', dataIndex: 'drop_address', key: 'drop', ellipsis: true, width: 200 },
@@ -88,8 +176,15 @@ export default function MyShipments() {
             render: d => new Date(d).toLocaleDateString()
         },
         {
-            title: '', key: 'actions', width: 60,
-            render: (_, r) => <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`${basePath}/shipments/${r.id}`)} />
+            title: '', key: 'actions', width: 100,
+            render: (_, r) => (
+                <div style={{ display: 'flex', gap: 4 }}>
+                    <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`${basePath}/shipments/${r.id}`)} />
+                    {['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(r.status) && (
+                        <Button size="small" icon={<CompassOutlined />} onClick={() => navigate(`${basePath}/track/${r.id}`)} title="Track" />
+                    )}
+                </div>
+            )
         },
     ];
 
@@ -100,19 +195,64 @@ export default function MyShipments() {
             <AdvancedFilterBar
                 onFilter={handleFilter}
                 statusOptions={STATUS_OPTIONS}
+
             />
+
+            {['SUPER_ADMIN', 'FLEET_MANAGER'].includes(user?.role) && selectedRowKeys.length > 0 && (
+                <div style={{ marginBottom: 16, padding: '8px 16px', background: '#fff2f0', border: '1px solid #ffccc7', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#a8071a', fontWeight: 500 }}>Selected {selectedRowKeys.length} items</span>
+                    <Button type="primary" danger onClick={() => setIsModalOpen(true)}>
+                        Assign / Reassign to Vehicle
+                    </Button>
+                </div>
+            )}
 
             <Card bordered={false} bodyStyle={{ padding: 0 }}>
                 <Table
+                    rowSelection={['SUPER_ADMIN', 'FLEET_MANAGER'].includes(user?.role) ? rowSelection : undefined}
                     columns={columns}
                     dataSource={shipments}
                     rowKey="id"
                     loading={loading}
-                    pagination={{ pageSize: 15, showSizeChanger: true }}
+                    pagination={false}
                     size="middle"
                     scroll={{ x: 1000 }}
                 />
             </Card>
+
+            <Modal
+                title="Bulk Assign Shipments"
+                open={isModalOpen}
+                onOk={handleBulkAssign}
+                onCancel={() => setIsModalOpen(false)}
+                confirmLoading={assigning}
+                okText="Assign"
+            >
+                <p>Assign <b>{selectedRowKeys.length}</b> shipments to:</p>
+                <Select
+                    style={{ width: '100%' }}
+                    placeholder="Select a Vehicle"
+                    onChange={setSelectedVehicle}
+                    value={selectedVehicle}
+                    options={vehicles.map(v => {
+                        const remainingWt = v.weight_capacity - v.current_weight_used;
+                        const remainingVol = v.volume_capacity - v.current_volume_used;
+                        return {
+                            value: v.id,
+                            label: (
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span>{v.plate_number} ({v.name})</span>
+                                    <span style={{ fontSize: 11, color: '#999' }}>
+                                        {v.current_driver_id ? 'Has Driver' : 'No Driver'} | {remainingWt}kg left
+                                    </span>
+                                </div>
+                            ),
+                            disabled: !v.current_driver_id // Disable vehicles without drivers
+                        };
+                    })}
+                />
+                {!selectedVehicle && <p style={{ marginTop: 8, color: '#999', fontSize: 12 }}>Only vehicles with assigned drivers are shown.</p>}
+            </Modal>
         </div>
     );
 }

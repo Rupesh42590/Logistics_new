@@ -24,8 +24,7 @@ export const AuthProvider = ({ children }) => {
         })
         .catch(err => {
           console.error("Failed to fetch user", err);
-          localStorage.removeItem('token');
-          setToken(null);
+          logout();
         })
         .finally(() => setLoading(false));
     } else {
@@ -33,6 +32,23 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, [token]);
+
+  // Global 401 interceptor
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, []);
 
   const login = async (email, password) => {
     try {

@@ -137,13 +137,7 @@ export default function AdminDashboard() {
             path: '/admin/vehicles',
             color: '#f6ffed',
         },
-        {
-            title: 'Zone Management',
-            desc: 'Delivery zones',
-            icon: <AppstoreOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
-            path: '/admin/zones',
-            color: '#f9f0ff',
-        },
+
     ];
 
     const getTimelineColor = (action) => {
@@ -192,8 +186,8 @@ export default function AdminDashboard() {
             {/* Stats Row */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 {statCards.map((s, i) => (
-                    <Col xs={24} sm={12} md={8} lg={4} xl={4} key={i} flex="1">
-                        <Card bordered={false} bodyStyle={{ padding: 20 }}>
+                    <Col xs={24} sm={12} md={8} flex="1" key={i}>
+                        <Card bordered={false} bodyStyle={{ padding: 20, height: '100%' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <Statistic
                                     title={<Text type="secondary" style={{ fontSize: 13 }}>{s.title}</Text>}
