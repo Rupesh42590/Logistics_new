@@ -197,3 +197,19 @@ h3 { font-size: 1.25rem; line-height: 1.75rem; }
 .mb-1 { margin-bottom: 0.25rem; }
 .block { display: block; }
 
+/* Force Canvas Full Size Override */
+.force-canvas-full {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+}
+
+.force-canvas-full canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  outline: none;
+}
+

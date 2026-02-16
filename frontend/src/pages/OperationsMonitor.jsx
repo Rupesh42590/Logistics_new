@@ -114,17 +114,17 @@ export default function OperationsMonitor() {
                         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                             <Col xs={12} sm={6}>
                                 <Card bordered={false} style={{ background: '#f0f5ff' }}>
-                                    <Statistic title="Active Shipments" value={activeShipments.length} prefix={<SendOutlined />} valueStyle={{ color: '#1890ff' }} />
+                                    <Statistic title="Active Shipments" value={activeShipments.length} prefix={<SendOutlined />} />
                                 </Card>
                             </Col>
                             <Col xs={12} sm={6}>
                                 <Card bordered={false} style={{ background: '#f6ffed' }}>
-                                    <Statistic title="Vehicles Available" value={vehicleStatus.available || 0} prefix={<CarOutlined />} valueStyle={{ color: '#52c41a' }} />
+                                    <Statistic title="Vehicles Available" value={vehicleStatus.available || 0} prefix={<CarOutlined />} />
                                 </Card>
                             </Col>
                             <Col xs={12} sm={6}>
                                 <Card bordered={false} style={{ background: '#e6f7ff' }}>
-                                    <Statistic title="Vehicles On Trip" value={vehicleStatus.on_trip || 0} prefix={<CarOutlined />} valueStyle={{ color: '#1890ff' }} />
+                                    <Statistic title="Vehicles On Trip" value={vehicleStatus.on_trip || 0} prefix={<CarOutlined />} />
                                 </Card>
                             </Col>
                             <Col xs={12} sm={6}>
@@ -140,7 +140,7 @@ export default function OperationsMonitor() {
                                 columns={shipmentColumns}
                                 dataSource={activeShipments}
                                 rowKey="id"
-                                pagination={{ pageSize: 5 }}
+                                pagination={false}
                                 size="middle"
                                 scroll={{ x: 800 }}
                                 locale={{ emptyText: 'No active shipments' }}
@@ -180,7 +180,7 @@ export default function OperationsMonitor() {
                             columns={auditColumns}
                             dataSource={auditLogs}
                             rowKey="id"
-                            pagination={{ pageSize: 10 }}
+                            pagination={false}
                             size="small"
                         />
                     </Tabs.TabPane>

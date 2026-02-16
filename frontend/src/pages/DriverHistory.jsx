@@ -90,7 +90,7 @@ export default function DriverHistory() {
                             title="Total Delivered"
                             value={totalDelivered}
                             prefix={<CarOutlined />}
-                            valueStyle={{ color: '#1890ff' }}
+                            valueStyle={{ color: 'inherit' }}
                         />
                     </Card>
                 </Col>
@@ -100,7 +100,7 @@ export default function DriverHistory() {
                             title="Confirmed"
                             value={confirmedCount}
                             prefix={<CheckCircleOutlined />}
-                            valueStyle={{ color: '#52c41a' }}
+                            valueStyle={{ color: 'inherit' }}
                         />
                     </Card>
                 </Col>
@@ -110,7 +110,7 @@ export default function DriverHistory() {
                             title="Pending Confirmation"
                             value={totalDelivered - confirmedCount}
                             prefix={<ClockCircleOutlined />}
-                            valueStyle={{ color: '#faad14' }}
+                            valueStyle={{ color: 'inherit' }}
                         />
                     </Card>
                 </Col>
@@ -122,7 +122,7 @@ export default function DriverHistory() {
                 rowKey="id"
                 loading={loading}
                 locale={{ emptyText: <Empty description="No deliveries yet" /> }}
-                pagination={{ pageSize: 10, showTotal: (total) => `${total} deliveries` }}
+                pagination={false}
                 size="middle"
                 bordered
                 style={{ background: '#fff', borderRadius: 8 }}

@@ -68,36 +68,36 @@ export default function AdminDashboard() {
             title: 'Created Today',
             value: stats.scheduled_today,
             icon: <CalendarOutlined />,
-            color: '#ff4d4f',
-            bg: '#fff1f0',
+            color: '#000000',
+            bg: '#f5f5f5',
         },
         {
             title: 'Delayed Shipments',
             value: stats.delayed_deliveries || 0,
             icon: <WarningOutlined />,
-            color: '#ff4d4f',
-            bg: '#fff2f0',
+            color: '#000000',
+            bg: '#f5f5f5',
         },
         {
             title: 'Active Shipments',
             value: stats.vehicles_on_site, // Mapped from backend active_shipments
             icon: <CarOutlined />,
-            color: '#fa8c16',
-            bg: '#fff7e6',
+            color: '#000000',
+            bg: '#f5f5f5',
         },
         {
             title: 'Pending Assign',
             value: stats.pending_approvals, // Mapped from backend pending_count
             icon: <CheckCircleOutlined />,
-            color: '#722ed1',
-            bg: '#f9f0ff',
+            color: '#000000',
+            bg: '#f5f5f5',
         },
         {
             title: 'Active Drivers',
             value: stats.dock_utilization, // Mapped from backend active_drivers
             icon: <TeamOutlined />,
-            color: '#52c41a',
-            bg: '#f6ffed',
+            color: '#000000',
+            bg: '#f5f5f5',
         },
     ];
 
@@ -105,37 +105,37 @@ export default function AdminDashboard() {
         {
             title: 'Operations Monitor',
             desc: 'Real-time tracking & alerts',
-            icon: <ClockCircleOutlined style={{ fontSize: 24, color: '#ff4d4f' }} />,
+            icon: <ClockCircleOutlined style={{ fontSize: 24, color: '#000000' }} />,
             path: '/admin/operations',
-            color: '#fff1f0',
+            color: '#f5f5f5',
         },
         {
             title: 'System Users',
             desc: 'RBAC & Role Management',
-            icon: <TeamOutlined style={{ fontSize: 24, color: '#595959' }} />,
+            icon: <TeamOutlined style={{ fontSize: 24, color: '#000000' }} />,
             path: '/admin/users',
             color: '#f5f5f5',
         },
         {
             title: 'Reports & Analytics',
             desc: 'Performance metrics',
-            icon: <AppstoreOutlined style={{ fontSize: 24, color: '#ff4d4f' }} />,
+            icon: <AppstoreOutlined style={{ fontSize: 24, color: '#000000' }} />,
             path: '/admin/analytics',
-            color: '#fff1f0',
+            color: '#f5f5f5',
         },
         {
             title: 'All Shipments',
             desc: 'Track & manage shipments',
-            icon: <CarOutlined style={{ fontSize: 24, color: '#fa8c16' }} />,
+            icon: <CarOutlined style={{ fontSize: 24, color: '#000000' }} />,
             path: '/admin/shipments',
-            color: '#fff7e6',
+            color: '#f5f5f5',
         },
         {
             title: 'Vehicle Fleet',
             desc: 'Manage vehicles',
-            icon: <CarOutlined style={{ fontSize: 24, color: '#52c41a' }} />,
+            icon: <CarOutlined style={{ fontSize: 24, color: '#000000' }} />,
             path: '/admin/vehicles',
-            color: '#f6ffed',
+            color: '#f5f5f5',
         },
 
     ];

@@ -67,14 +67,11 @@ export default function UserManagement() {
             title: 'User',
             key: 'user',
             render: (_, record) => (
-                <Space>
-                    <UserOutlined style={{ color: '#8c8c8c' }} />
-                    <div>
-                        <Text strong>{record.name || record.email}</Text>
-                        <br />
-                        <Text type="secondary" style={{ fontSize: 12 }}>{record.email}</Text>
-                    </div>
-                </Space>
+                <div>
+                    <Text strong>{record.name || record.email}</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>{record.email}</Text>
+                </div>
             ),
             sorter: (a, b) => (a.name || a.email).localeCompare(b.name || b.email),
         },
@@ -82,7 +79,7 @@ export default function UserManagement() {
             title: 'Role',
             dataIndex: 'role',
             key: 'role',
-            render: (role) => <Tag color={ROLE_COLORS[role] || 'default'}>{role?.replace('_', ' ')}</Tag>,
+            render: (role) => <Text>{role?.replace('_', ' ')}</Text>,
             filters: Object.keys(ROLE_COLORS).map(r => ({ text: r.replace('_', ' '), value: r })),
             onFilter: (value, record) => record.role === value,
         },
@@ -144,7 +141,7 @@ export default function UserManagement() {
                 dataSource={users}
                 rowKey="id"
                 loading={loading}
-                pagination={{ pageSize: 10, showTotal: (total) => `${total} users` }}
+                pagination={false}
                 size="middle"
                 bordered
                 style={{ background: '#fff', borderRadius: 8 }}

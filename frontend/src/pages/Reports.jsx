@@ -64,7 +64,7 @@ export default function Reports() {
     const columns = [
         { title: 'Report Type', dataIndex: 'type', key: 'type' },
         { title: 'Description', dataIndex: 'desc', key: 'desc' },
-        { title: 'Format', dataIndex: 'format', key: 'format', render: () => <Tag color="green">CSV</Tag> },
+        { title: 'Format', dataIndex: 'format', key: 'format', render: () => <Text>CSV</Text> },
         {
             title: 'Action',
             key: 'action',

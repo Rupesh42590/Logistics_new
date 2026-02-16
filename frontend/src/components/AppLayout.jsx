@@ -24,6 +24,7 @@ import {
   HistoryOutlined,
   BankOutlined,
   CompassOutlined,
+  BoxPlotOutlined,
 } from '@ant-design/icons';
 
 const { Sider, Content, Header } = Layout;
@@ -63,10 +64,10 @@ const getMenuItems = (role) => {
       return [
         { key: '/admin', icon: <DashboardOutlined />, label: <Link to="/admin">Dashboard</Link> },
         { type: 'divider' },
-        { key: '/admin/operations', icon: <AimOutlined />, label: <Link to="/admin/operations">Operations</Link> },
         { key: '/admin/shipments', icon: <SendOutlined />, label: <Link to="/admin/shipments">Shipments</Link> },
         { key: '/admin/locations', icon: <EnvironmentOutlined />, label: <Link to="/admin/locations">Saved Locations</Link> },
         { key: '/admin/vehicles', icon: <CarOutlined />, label: <Link to="/admin/vehicles">Vehicles</Link> },
+
         { key: '/admin/analytics', icon: <FundOutlined />, label: <Link to="/admin/analytics">Analytics</Link> },
         { type: 'divider' },
         { key: '/admin/reports', icon: <BarChartOutlined />, label: <Link to="/admin/reports">Reports</Link> },
@@ -92,9 +93,9 @@ const getMenuItems = (role) => {
     case 'FLEET_MANAGER':
       return [
         { key: '/fleet', icon: <DashboardOutlined />, label: <Link to="/fleet">Dashboard</Link> },
-        { key: '/fleet/operations', icon: <AimOutlined />, label: <Link to="/fleet/operations">Operations</Link> },
         { key: '/fleet/shipments', icon: <SendOutlined />, label: <Link to="/fleet/shipments">Shipments</Link> },
         { key: '/fleet/vehicles', icon: <CarOutlined />, label: <Link to="/fleet/vehicles">Vehicles</Link> },
+
         { key: '/fleet/analytics', icon: <FundOutlined />, label: <Link to="/fleet/analytics">Analytics</Link> },
         { key: '/fleet/reports', icon: <BarChartOutlined />, label: <Link to="/fleet/reports">Reports</Link> },
         { type: 'divider' },
@@ -263,21 +264,7 @@ export default function AppLayout({ children }) {
             alignItems: 'center',
             opacity: 0.8
           }}>
-            <div style={{
-              background: 'rgba(255, 77, 79, 0.05)', // Very subtle red tint
-              padding: '6px 16px',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 77, 79, 0.1)',
-              backdropFilter: 'blur(4px)', // The "Hazy" effect
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
-            }}>
-              <Text style={{ fontSize: 12, color: '#8c8c8c' }}>Developed by</Text>
-              <Text strong style={{ fontSize: 12, background: 'linear-gradient(45deg, #ff4d4f, #ff7875)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent' }}>
-                LST RGlinnotech Pvt. Ltd.
-              </Text>
-            </div>
+            
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

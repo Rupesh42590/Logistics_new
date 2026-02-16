@@ -120,7 +120,7 @@ export default function ZoneManagement() {
                     dataSource={zones}
                     rowKey="id"
                     loading={loading}
-                    pagination={{ pageSize: 10 }}
+                    pagination={false}
                     size="middle"
                 />
             </Card>

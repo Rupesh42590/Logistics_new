@@ -87,12 +87,12 @@ export default function DriverDashboard() {
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={12} sm={6}>
                     <Card bordered={false}>
-                        <Statistic title="Active Shipments" value={stats.active_shipments || 0} prefix={<SendOutlined />} valueStyle={{ color: '#1890ff' }} />
+                        <Statistic title="Active Shipments" value={stats.active_shipments || 0} prefix={<SendOutlined />} />
                     </Card>
                 </Col>
                 <Col xs={12} sm={6}>
                     <Card bordered={false}>
-                        <Statistic title="Completed Today" value={stats.completed_today || 0} prefix={<CheckCircleOutlined />} valueStyle={{ color: '#52c41a' }} />
+                        <Statistic title="Completed Today" value={stats.completed_today || 0} prefix={<CheckCircleOutlined />} />
                     </Card>
                 </Col>
                 <Col xs={12} sm={6}>
@@ -108,7 +108,7 @@ export default function DriverDashboard() {
                                 <Text type="secondary" style={{ fontSize: 12 }}>{stats.vehicle.plate_number}</Text>
                             </div>
                         ) : (
-                            <Statistic title="Vehicle" value="None Assigned" prefix={<CarOutlined />} valueStyle={{ fontSize: 16, color: '#999' }} />
+                            <Statistic title="Vehicle" value="None Assigned" prefix={<CarOutlined />} valueStyle={{ fontSize: 16 }} />
                         )}
                     </Card>
                 </Col>
@@ -124,7 +124,7 @@ export default function DriverDashboard() {
                     dataSource={completedShipments}
                     rowKey="id"
                     loading={loading}
-                    pagination={{ pageSize: 5 }}
+                    pagination={false}
                     size="middle"
                 />
             </Card>

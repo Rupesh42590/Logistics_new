@@ -162,13 +162,13 @@ export default function MSMEDashboard() {
                     <Card bordered={false}><Statistic title="Total Shipments" value={stats.total} prefix={<ShoppingOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6}>
-                    <Card bordered={false}><Statistic title="Pending" value={stats.pending} prefix={<ClockCircleOutlined />} valueStyle={{ color: '#faad14' }} /></Card>
+                    <Card bordered={false}><Statistic title="Pending" value={stats.pending} prefix={<ClockCircleOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6}>
-                    <Card bordered={false}><Statistic title="Active" value={stats.active} prefix={<SendOutlined />} valueStyle={{ color: '#ff4d4f' }} /></Card>
+                    <Card bordered={false}><Statistic title="Active" value={stats.active} prefix={<SendOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6}>
-                    <Card bordered={false}><Statistic title="Delivered" value={stats.delivered} prefix={<CheckCircleOutlined />} valueStyle={{ color: '#52c41a' }} /></Card>
+                    <Card bordered={false}><Statistic title="Delivered" value={stats.delivered} prefix={<CheckCircleOutlined />} /></Card>
                 </Col>
             </Row>
 

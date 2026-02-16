@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Table, Card, Tag, Button, Modal, Form, Input, InputNumber, Select, Typography, Space, Progress, message, Switch } from 'antd';
-import { PlusOutlined, CarOutlined, EditOutlined } from '@ant-design/icons';
+import { Table, Card, Tag, Button, Modal, Form, Input, InputNumber, Select, Typography, Space, Progress, message, Switch, Tooltip } from 'antd';
+import { PlusOutlined, CarOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import TruckCargoVisualizer from '../components/TruckCargoVisualizer';
 
 const { Title, Text } = Typography;
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -54,6 +55,7 @@ export default function VehicleManagement() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingVehicle, setEditingVehicle] = useState(null);
     const [form] = Form.useForm();
+    const [cargoViewVehicle, setCargoViewVehicle] = useState(null);
 
     const headers = { Authorization: `Bearer ${token}` };
 
@@ -109,7 +111,6 @@ export default function VehicleManagement() {
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name', render: (t) => <Space><CarOutlined /><Text strong>{t}</Text></Space> },
         { title: 'Plate #', dataIndex: 'plate_number', key: 'plate', render: t => <Tag>{t}</Tag> },
-        { title: 'Type', dataIndex: 'vehicle_type', key: 'type', render: t => TYPE_LABELS[t] || t },
         {
             title: 'Status', dataIndex: 'status', key: 'status',
             render: s => <Tag color={STATUS_COLORS[s]}>{s.replace('_', ' ')}</Tag>
@@ -120,7 +121,7 @@ export default function VehicleManagement() {
                 const pct = r.weight_capacity > 0 ? (r.current_weight_used / r.weight_capacity) * 100 : 0;
                 return (
                     <div style={{ minWidth: 120 }}>
-                        <Progress percent={Math.round(pct)} size="small" strokeColor={pct > 80 ? '#ff4d4f' : '#1890ff'} />
+                        <Progress percent={Math.round(pct)} size="small" strokeColor="#ff4d4f" />
                         <Text type="secondary" style={{ fontSize: 11 }}>{r.current_weight_used}/{r.weight_capacity} kg</Text>
                     </div>
                 );
@@ -132,7 +133,7 @@ export default function VehicleManagement() {
                 const pct = r.volume_capacity > 0 ? (r.current_volume_used / r.volume_capacity) * 100 : 0;
                 return (
                     <div style={{ minWidth: 120 }}>
-                        <Progress percent={Math.round(pct)} size="small" strokeColor={pct > 80 ? '#ff4d4f' : '#52c41a'} />
+                        <Progress percent={Math.round(pct)} size="small" strokeColor="#ff4d4f" />
                         <Text type="secondary" style={{ fontSize: 11 }}>{r.current_volume_used}/{r.volume_capacity} m³</Text>
                     </div>
                 );
@@ -144,8 +145,17 @@ export default function VehicleManagement() {
             render: did => drivers.find(d => d.id === did)?.name || '-'
         },
         {
-            title: '', key: 'actions', width: 60,
-            render: (_, r) => <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />,
+            title: '', key: 'actions', width: 100,
+            render: (_, r) => (
+              <Space size={4}>
+                <Tooltip title="Edit vehicle">
+                  <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
+                </Tooltip>
+                <Tooltip title="3D Cargo View">
+                  <Button size="small" icon={<EyeOutlined />} onClick={() => setCargoViewVehicle(r)} />
+                </Tooltip>
+              </Space>
+            ),
         },
     ];
 
@@ -184,8 +194,8 @@ export default function VehicleManagement() {
                     <Form.Item name="plate_number" label="Plate Number" rules={[{ required: true }]}>
                         <Input placeholder="e.g. KA-01-AB-1234" />
                     </Form.Item>
-                    <Form.Item name="vehicle_type" label="Type" initialValue="TRUCK">
-                        <Select options={Object.entries(TYPE_LABELS).map(([k, v]) => ({ value: k, label: v }))} />
+                    <Form.Item name="vehicle_type" initialValue="TRUCK" hidden>
+                        <Input />
                     </Form.Item>
                     <Space style={{ width: '100%' }} size="middle">
                         <Form.Item name="weight_capacity" label="Weight Capacity (kg)" initialValue={1000}>
@@ -225,6 +235,54 @@ export default function VehicleManagement() {
                         </Button>
                     </Form.Item>
                 </Form>
+            </Modal>
+            {/* 3D Cargo View Modal */}
+            <Modal
+                title={
+                    <Space>
+                        <CarOutlined />
+                        <span>{cargoViewVehicle?.name} ({cargoViewVehicle?.plate_number})</span>
+                    </Space>
+                }
+                open={!!cargoViewVehicle}
+                onCancel={() => setCargoViewVehicle(null)}
+                footer={null}
+                width={800}
+                centered
+                bodyStyle={{ padding: 0, overflow: 'hidden', borderRadius: '0 0 8px 8px' }}
+                destroyOnClose
+            >
+                {cargoViewVehicle && (
+                    <div style={{ height: 500, background: '#f8fafc', position: 'relative' }}>
+                        <TruckCargoVisualizer
+                            weightUsed={cargoViewVehicle.current_weight_used}
+                            weightCapacity={cargoViewVehicle.weight_capacity}
+                            volumeUsed={cargoViewVehicle.current_volume_used}
+                            volumeCapacity={cargoViewVehicle.volume_capacity}
+                            vehicleType={cargoViewVehicle.vehicle_type}
+                            vehicleName={cargoViewVehicle.name}
+                            plateNumber={cargoViewVehicle.plate_number}
+                            height="100%"
+                            style={{ width: '100%', height: '100%' }}
+                            showLabels={false} 
+                        />
+                        {/* Minimal instruction overlay */}
+                        <div style={{
+                            position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+                            background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(4px)',
+                            padding: '6px 16px', borderRadius: 20,
+                            display: 'flex', gap: 16, alignItems: 'center',
+                            pointerEvents: 'none',
+                        }}>
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                                🖱️ Drag to Rotate
+                            </Text>
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                                🔍 Scroll to Zoom
+                            </Text>
+                        </div>
+                    </div>
+                )}
             </Modal>
         </div>
     );

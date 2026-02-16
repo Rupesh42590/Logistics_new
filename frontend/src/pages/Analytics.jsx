@@ -7,14 +7,14 @@ import {
 } from '@ant-design/icons';
 import axios from 'axios';
 import {
-    LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+    LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
     XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
 const { Title, Text } = Typography;
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#cf1322', '#fa541c', '#fa8c16', '#ad2102'];
 
 export default function Analytics() {
     const { token } = useAuth();
@@ -76,17 +76,17 @@ export default function Analytics() {
         { title: 'Total', dataIndex: 'total_shipments', key: 'total' },
         {
             title: 'Completed', dataIndex: 'completed', key: 'completed',
-            render: v => <Tag color="green">{v}</Tag>
+            render: v => <Tag color="#cf1322">{v}</Tag>
         },
         {
             title: 'Active', dataIndex: 'active', key: 'active',
-            render: v => <Tag color="blue">{v}</Tag>
+            render: v => <Tag color="orange">{v}</Tag>
         },
         {
             title: 'Completion Rate', key: 'rate',
             render: (_, r) => {
                 const rate = r.total_shipments > 0 ? Math.round((r.completed / r.total_shipments) * 100) : 0;
-                return <Progress percent={rate} size="small" strokeColor={rate > 80 ? '#52c41a' : rate > 50 ? '#faad14' : '#ff4d4f'} />;
+                return <Progress percent={rate} size="small" strokeColor={rate > 80 ? '#cf1322' : rate > 50 ? '#fa541c' : '#ad2102'} />;
             },
         },
     ];
@@ -106,16 +106,16 @@ export default function Analytics() {
                     <Card bordered={false}><Statistic title="Total" value={shipmentAnalytics.total} prefix={<SendOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Pending" value={shipmentAnalytics.pending} valueStyle={{ color: '#faad14' }} /></Card>
+                    <Card bordered={false}><Statistic title="Pending" value={shipmentAnalytics.pending} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Active" value={shipmentAnalytics.active} valueStyle={{ color: '#1890ff' }} /></Card>
+                    <Card bordered={false}><Statistic title="Active" value={shipmentAnalytics.active} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Delivered" value={shipmentAnalytics.delivered} valueStyle={{ color: '#52c41a' }} /></Card>
+                    <Card bordered={false}><Statistic title="Delivered" value={shipmentAnalytics.delivered} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Confirmed" value={shipmentAnalytics.confirmed} valueStyle={{ color: '#389e0d' }} /></Card>
+                    <Card bordered={false}><Statistic title="Confirmed" value={shipmentAnalytics.confirmed} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
                     <Card bordered={false}><Statistic title="Utilization" value={fleetAnalytics.utilization_rate} suffix="%" prefix={<CarOutlined />} /></Card>
@@ -124,7 +124,7 @@ export default function Analytics() {
                     <Card bordered={false}><Statistic title="Today" value={shipmentAnalytics.today} prefix={<BarChartOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Rate" value={shipmentAnalytics.completion_rate} suffix="%" prefix={<RiseOutlined />} valueStyle={{ color: '#52c41a' }} /></Card>
+                    <Card bordered={false}><Statistic title="Rate" value={shipmentAnalytics.completion_rate} suffix="%" prefix={<RiseOutlined />} /></Card>
                 </Col>
             </Row>
 
@@ -134,14 +134,20 @@ export default function Analytics() {
                     <Card title="Shipment Volume (Last 7 Days)" bordered={false} style={{ marginBottom: 24 }}>
                         <div style={{ height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={shipmentAnalytics.chart_data || []}>
-                                    <CartesianGrid strokeDasharray="3 3" />
+                                <AreaChart data={shipmentAnalytics.chart_data || []}>
+                                    <defs>
+                                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#cf1322" stopOpacity={0.8}/>
+                                            <stop offset="95%" stopColor="#cf1322" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                     <XAxis dataKey="date" />
                                     <YAxis allowDecimals={false} />
                                     <Tooltip />
                                     <Legend />
-                                    <Line type="monotone" dataKey="count" stroke="#1890ff" activeDot={{ r: 8 }} name="Shipments" />
-                                </LineChart>
+                                    <Area type="monotone" dataKey="count" stroke="#cf1322" fillOpacity={1} fill="url(#colorCount)" name="Shipments" />
+                                </AreaChart>
                             </ResponsiveContainer>
                         </div>
                     </Card>
@@ -155,8 +161,8 @@ export default function Analytics() {
                                     <YAxis allowDecimals={false} />
                                     <Tooltip />
                                     <Legend />
-                                    <Bar dataKey="completed" fill="#52c41a" name="Completed" />
-                                    <Bar dataKey="active" fill="#1890ff" name="Active" />
+                                    <Bar dataKey="completed" fill="#cf1322" name="Completed" />
+                                    <Bar dataKey="active" fill="#fa541c" name="Active" />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -179,7 +185,7 @@ export default function Analytics() {
                                         dataKey="value"
                                     >
                                         {fleetData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={['#52c41a', '#1890ff', '#faad14'][index % 3]} />
+                                            <Cell key={`cell-${index}`} fill={['#fa8c16', '#cf1322', '#fa541c'][index % 3]} />
                                         ))}
                                     </Pie>
                                     <Tooltip />

@@ -26,6 +26,7 @@ import SavedLocations from './pages/SavedLocations';
 import RouteTracking from './pages/RouteTracking';
 
 import DeliveryReceipt from './pages/DeliveryReceipt';
+import CargoVisualizer from './pages/CargoVisualizer';
 import { AuthProvider } from './context/AuthContext';
 import { ModalProvider } from './context/ModalContext';
 
@@ -65,6 +66,7 @@ function App() {
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
                       <Route path="locations" element={<SavedLocations />} />
                       <Route path="track/:id" element={<RouteTracking />} />
+                      <Route path="cargo-3d" element={<CargoVisualizer />} />
                       <Route path="settings" element={<Settings />} />
                     </Routes>
                   </AppLayout>
@@ -116,6 +118,7 @@ function App() {
                       <Route path="shipments" element={<MyShipments />} />
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
                       <Route path="track/:id" element={<RouteTracking />} />
+                      <Route path="cargo-3d" element={<CargoVisualizer />} />
                       <Route path="settings" element={<Settings />} />
                     </Routes>
                   </AppLayout>

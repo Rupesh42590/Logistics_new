@@ -77,7 +77,7 @@ function ChangePasswordForm() {
 
     setLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/auth/change-password`, {
+      await axios.post(`${API_BASE_URL}/change-password`, {
         old_password: values.old_password,
         new_password: values.new_password
       }, {

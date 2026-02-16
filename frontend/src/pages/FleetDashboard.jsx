@@ -54,16 +54,16 @@ export default function FleetDashboard() {
                     <Card bordered={false}><Statistic title="Total Vehicles" value={fleetStats.total_vehicles || 0} prefix={<CarOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={8} md={4}>
-                    <Card bordered={false}><Statistic title="Available" value={fleetStats.available || 0} valueStyle={{ color: '#52c41a' }} /></Card>
+                    <Card bordered={false}><Statistic title="Available" value={fleetStats.available || 0} /></Card>
                 </Col>
                 <Col xs={12} sm={8} md={4}>
-                    <Card bordered={false}><Statistic title="On Trip" value={fleetStats.on_trip || 0} valueStyle={{ color: '#1890ff' }} /></Card>
+                    <Card bordered={false}><Statistic title="On Trip" value={fleetStats.on_trip || 0} /></Card>
                 </Col>
                 <Col xs={12} sm={8} md={4}>
-                    <Card bordered={false}><Statistic title="Maintenance" value={fleetStats.maintenance || 0} valueStyle={{ color: '#faad14' }} /></Card>
+                    <Card bordered={false}><Statistic title="Maintenance" value={fleetStats.maintenance || 0} /></Card>
                 </Col>
                 <Col xs={12} sm={8} md={4}>
-                    <Card bordered={false}><Statistic title="Active Drivers" value={fleetStats.active_drivers || 0} prefix={<TeamOutlined />} valueStyle={{ color: '#1890ff' }} /></Card>
+                    <Card bordered={false}><Statistic title="Active Drivers" value={fleetStats.active_drivers || 0} prefix={<TeamOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={8} md={4}>
                     <Card bordered={false}><Statistic title="Total Drivers" value={fleetStats.total_drivers || 0} prefix={<TeamOutlined />} /></Card>
@@ -102,8 +102,8 @@ export default function FleetDashboard() {
                     <Card bordered={false} style={{ height: '100%' }}>
                         <Space direction="vertical" style={{ width: '100%' }} size="large">
                             <Statistic title="Shipments Today" value={shipmentStats.today || 0} prefix={<SendOutlined />} />
-                            <Statistic title="Active Now" value={shipmentStats.active || 0} prefix={<ThunderboltOutlined />} valueStyle={{ color: '#1890ff' }} />
-                            <Statistic title="Delayed" value={shipmentStats.delayed || 0} prefix={<WarningOutlined />} valueStyle={{ color: shipmentStats.delayed > 0 ? '#ff4d4f' : '#52c41a' }} />
+                            <Statistic title="Active Now" value={shipmentStats.active || 0} prefix={<ThunderboltOutlined />} />
+                            <Statistic title="Delayed" value={shipmentStats.delayed || 0} prefix={<WarningOutlined />} />
                         </Space>
                     </Card>
                 </Col>

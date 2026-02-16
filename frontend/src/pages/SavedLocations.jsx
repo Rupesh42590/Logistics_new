@@ -82,7 +82,7 @@ export default function SavedLocations() {
             render: (_, r) => (
                 <Space>
                     <span style={{ fontWeight: 500 }}>{r.label}</span>
-                    {r.is_global && <Tag color="blue" icon={<GlobalOutlined />}>Global</Tag>}
+                    {r.is_global && <Tag color="gold" icon={<GlobalOutlined />}>Global</Tag>}
                 </Space>
             ) 
         },
@@ -126,7 +126,7 @@ export default function SavedLocations() {
                     dataSource={locations}
                     rowKey="id"
                     loading={loading}
-                    pagination={{ pageSize: 10 }}
+                    pagination={false}
                 />
             </Card>
 
