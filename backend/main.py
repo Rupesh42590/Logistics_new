@@ -654,7 +654,7 @@ async def create_shipment(
     # Reload with relationships
     result = await db.execute(
         select(models.Shipment)
-        .options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        .options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == shipment.id)
     )
     return result.scalars().first()
@@ -761,7 +761,9 @@ async def list_shipments(
 ):
     query = select(models.Shipment).options(
         selectinload(models.Shipment.items),
-        selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by)
+        selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by),
+        selectinload(models.Shipment.assigned_vehicle),
+        selectinload(models.Shipment.assigned_driver)
     )
 
     # Search filter
@@ -825,7 +827,9 @@ async def get_shipment(
         select(models.Shipment)
         .options(
             selectinload(models.Shipment.items),
-            selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by)
+            selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by),
+            selectinload(models.Shipment.assigned_vehicle),
+            selectinload(models.Shipment.assigned_driver)
         )
         .where(models.Shipment.id == id)
     )
@@ -854,7 +858,7 @@ async def update_shipment(
 
     await db.commit()
     result = await db.execute(
-        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == id)
     )
     return result.scalars().first()
@@ -1024,7 +1028,7 @@ async def auto_dispatch_shipment(
     await db.commit()
 
     result = await db.execute(
-        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == id)
     )
     return result.scalars().first()
@@ -1105,7 +1109,9 @@ async def manual_assign_shipment(
     result = await db.execute(
         select(models.Shipment).options(
             selectinload(models.Shipment.items),
-            selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by)
+            selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by),
+            selectinload(models.Shipment.assigned_vehicle),
+            selectinload(models.Shipment.assigned_driver)
         )
         .where(models.Shipment.id == id)
     )
@@ -1137,7 +1143,7 @@ async def pickup_shipment(
 
     await db.commit()
     result = await db.execute(
-        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == id)
     )
     return result.scalars().first()
@@ -1164,7 +1170,7 @@ async def transit_shipment(
 
     await db.commit()
     result = await db.execute(
-        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == id)
     )
     return result.scalars().first()
@@ -1230,7 +1236,7 @@ async def deliver_shipment(
 
     await db.commit()
     result = await db.execute(
-        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == id)
     )
     return result.scalars().first()
@@ -1261,7 +1267,7 @@ async def confirm_receipt(
 
     await db.commit()
     result = await db.execute(
-        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by))
+        select(models.Shipment).options(selectinload(models.Shipment.items), selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by), selectinload(models.Shipment.assigned_vehicle), selectinload(models.Shipment.assigned_driver))
         .where(models.Shipment.id == id)
     )
     return result.scalars().first()
@@ -1275,7 +1281,9 @@ async def get_delivery_receipt_data(
         select(models.Shipment).options(
             selectinload(models.Shipment.receipt),
             selectinload(models.Shipment.items),
-            selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by)
+            selectinload(models.Shipment.timeline).selectinload(models.ShipmentTimeline.updated_by),
+            selectinload(models.Shipment.assigned_vehicle),
+            selectinload(models.Shipment.assigned_driver)
         ).where(models.Shipment.id == id)
     )
     shipment = result.scalars().first()

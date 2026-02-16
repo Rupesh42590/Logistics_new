@@ -272,7 +272,15 @@ export default function AppLayout({ children }) {
               <Button
                 type="text"
                 icon={<HomeOutlined />}
-                onClick={() => window.location.href = '/'}
+                onClick={() => {
+                  const paths = {
+                    SUPER_ADMIN: '/admin',
+                    MSME: '/msme',
+                    FLEET_MANAGER: '/fleet',
+                    DRIVER: '/driver/dashboard'
+                  };
+                  navigate(paths[user?.role] || '/');
+                }}
                 style={{ color: '#595959', fontSize: 16 }}
               />
             </Tooltip>

@@ -323,6 +323,8 @@ class ShipmentResponse(BaseModel):
     confirmed_at: Optional[datetime.datetime] = None
     items: List[ShipmentItemResponse] = []
     timeline: List[ShipmentTimelineResponse] = []
+    assigned_vehicle: Optional[VehicleResponse] = None
+    assigned_driver: Optional[UserResponse] = None
 
     class Config:
         from_attributes = True

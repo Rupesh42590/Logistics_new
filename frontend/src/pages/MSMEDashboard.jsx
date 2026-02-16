@@ -140,7 +140,7 @@ export default function MSMEDashboard() {
         { title: 'Weight', dataIndex: 'total_weight', key: 'weight', render: v => `${v} kg` },
         {
             title: 'Status', dataIndex: 'status', key: 'status',
-            render: s => <Tag color={statusColor[s]}>{s.replace('_', ' ')}</Tag>
+            render: s => <span style={{ fontWeight: 500 }}>{s.replace(/_/g, ' ')}</span>
         },
         {
             title: 'Created', dataIndex: 'created_at', key: 'created_at',

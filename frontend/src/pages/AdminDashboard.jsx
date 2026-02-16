@@ -2,7 +2,8 @@ import { API_BASE_URL } from '../apiConfig';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AssignOrdersModal from '../components/AssignOrdersModal';
 import {
     Card,
     Row,
@@ -16,6 +17,7 @@ import {
     Space,
     Divider,
     Skeleton,
+    Dropdown,
 } from 'antd';
 import {
     CalendarOutlined,
@@ -27,21 +29,29 @@ import {
     ArrowRightOutlined,
     ClockCircleOutlined,
     ReloadOutlined,
+    DownOutlined,
+    PlusCircleOutlined,
+    SwapOutlined,
 } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
 export default function AdminDashboard() {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [stats, setStats] = useState({
         scheduled_today: 0,
         vehicles_on_site: 0,
-        pending_approvals: 0,
-        dock_utilization: '0/0',
-        delayed_deliveries: 0,
+        pending_requests: 0,
+        active_shipments: 0,
+        completed_shipments: 0,
     });
     const [auditLogs, setAuditLogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    
+    // Modal State
+    const [assignModalOpen, setAssignModalOpen] = useState(false);
+    const [assignMode, setAssignMode] = useState('PENDING');
 
     const fetchDashboardData = async () => {
         try {
@@ -177,9 +187,26 @@ export default function AdminDashboard() {
                 </div>
                 <Space>
                     <Button icon={<ReloadOutlined />} onClick={fetchDashboardData}>Refresh</Button>
-                    <Link to="/admin/deliveries">
-                        <Button type="primary" icon={<ArrowRightOutlined />}>Manage Deliveries</Button>
-                    </Link>
+                    <Dropdown menu={{
+                        items: [
+                            { 
+                                key: 'assign', 
+                                label: 'Assign Orders', 
+                                icon: <PlusCircleOutlined />, 
+                                onClick: () => { setAssignMode('PENDING'); setAssignModalOpen(true); } 
+                            },
+                            { 
+                                key: 'reassign', 
+                                label: 'Reassign Orders', 
+                                icon: <SwapOutlined />, 
+                                onClick: () => { setAssignMode('ASSIGNED'); setAssignModalOpen(true); } 
+                            }
+                        ]
+                    }}>
+                        <Button type="primary" icon={<ArrowRightOutlined />}>
+                            Manage Shipments <DownOutlined />
+                        </Button>
+                    </Dropdown>
                 </Space>
             </div>
 
@@ -289,6 +316,13 @@ export default function AdminDashboard() {
                     </Card>
                 </Col>
             </Row>
+            
+            <AssignOrdersModal
+                open={assignModalOpen}
+                onCancel={() => setAssignModalOpen(false)}
+                mode={assignMode}
+                onSuccess={fetchDashboardData}
+            />
         </div>
     );
 }

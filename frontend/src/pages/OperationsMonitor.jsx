@@ -55,7 +55,7 @@ export default function OperationsMonitor() {
         },
         {
             title: 'Status', dataIndex: 'status', key: 'status',
-            render: s => <Tag color={STATUS_COLORS[s]}>{s.replace(/_/g, ' ')}</Tag>
+            render: s => <span style={{ fontWeight: 500 }}>{s.replace(/_/g, ' ')}</span>
         },
         { title: 'Pickup', dataIndex: 'pickup_address', key: 'pickup', ellipsis: true },
         { title: 'Drop', dataIndex: 'drop_address', key: 'drop', ellipsis: true },

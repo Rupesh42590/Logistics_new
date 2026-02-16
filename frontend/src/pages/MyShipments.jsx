@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Table, Tag, Typography, Button, message, Card, Modal, Select } from 'antd';
 import { EyeOutlined, CompassOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import AdvancedFilterBar from '../components/AdvancedFilterBar';
 
@@ -27,9 +27,16 @@ const STATUS_OPTIONS = [
 export default function MyShipments() {
     const { token, user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [shipments, setShipments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filters, setFilters] = useState({});
+    
+    // Initialize filters from URL params
+    const [filters, setFilters] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status');
+        return status ? { status: [status] } : {};
+    });
     
     // Bulk Assignment State
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -169,7 +176,7 @@ export default function MyShipments() {
         { title: 'Volume', dataIndex: 'total_volume', key: 'volume', render: v => `${v} m³`, width: 90 },
         {
             title: 'Status', dataIndex: 'status', key: 'status', width: 120,
-            render: s => <Tag color={STATUS_COLORS[s]}>{s.replace(/_/g, ' ')}</Tag>
+            render: s => <span style={{ fontWeight: 500 }}>{s.replace(/_/g, ' ')}</span>
         },
         {
             title: 'Created', dataIndex: 'created_at', key: 'created', width: 110,

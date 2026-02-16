@@ -64,7 +64,7 @@ export default function DriverDashboard() {
         { title: 'Weight', dataIndex: 'total_weight', key: 'weight', render: v => `${v} kg`, width: 90 },
         {
             title: 'Status', dataIndex: 'status', key: 'status', width: 120,
-            render: s => <Tag color={STATUS_COLORS[s]}>{s.replace(/_/g, ' ')}</Tag>
+            render: s => <span style={{ fontWeight: 500 }}>{s.replace(/_/g, ' ')}</span>
         },
         {
             title: 'Action', key: 'action', width: 140,
@@ -72,7 +72,7 @@ export default function DriverDashboard() {
                 if (r.status === 'ASSIGNED') return <Button size="small" type="primary" loading={actionLoading === r.id} onClick={() => handleAction(r.id, 'pickup')}>Pick Up</Button>;
                 if (r.status === 'PICKED_UP') return <Button size="small" type="primary" loading={actionLoading === r.id} onClick={() => handleAction(r.id, 'in-transit')}>Start Transit</Button>;
                 if (r.status === 'IN_TRANSIT') return <Button size="small" type="primary" style={{ background: '#52c41a' }} onClick={() => handleAction(r.id, 'deliver')}>Deliver</Button>;
-                return <Tag>{r.status}</Tag>;
+                return <span style={{ fontWeight: 500 }}>{r.status.replace(/_/g, ' ')}</span>;
             },
         },
     ];

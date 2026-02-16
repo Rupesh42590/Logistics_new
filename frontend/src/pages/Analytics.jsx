@@ -103,36 +103,36 @@ export default function Analytics() {
             {/* KPIs */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Total" value={shipmentAnalytics.total} prefix={<SendOutlined />} /></Card>
+                    <Card variant="borderless"><Statistic title="Total" value={shipmentAnalytics.total} prefix={<SendOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Pending" value={shipmentAnalytics.pending} /></Card>
+                    <Card variant="borderless"><Statistic title="Pending" value={shipmentAnalytics.pending} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Active" value={shipmentAnalytics.active} /></Card>
+                    <Card variant="borderless"><Statistic title="Active" value={shipmentAnalytics.active} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Delivered" value={shipmentAnalytics.delivered} /></Card>
+                    <Card variant="borderless"><Statistic title="Delivered" value={shipmentAnalytics.delivered} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Confirmed" value={shipmentAnalytics.confirmed} /></Card>
+                    <Card variant="borderless"><Statistic title="Confirmed" value={shipmentAnalytics.confirmed} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Utilization" value={fleetAnalytics.utilization_rate} suffix="%" prefix={<CarOutlined />} /></Card>
+                    <Card variant="borderless"><Statistic title="Utilization" value={fleetAnalytics.utilization_rate} suffix="%" prefix={<CarOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Today" value={shipmentAnalytics.today} prefix={<BarChartOutlined />} /></Card>
+                    <Card variant="borderless"><Statistic title="Today" value={shipmentAnalytics.today} prefix={<BarChartOutlined />} /></Card>
                 </Col>
                 <Col xs={12} sm={6} md={3}>
-                    <Card bordered={false}><Statistic title="Rate" value={shipmentAnalytics.completion_rate} suffix="%" prefix={<RiseOutlined />} /></Card>
+                    <Card variant="borderless"><Statistic title="Rate" value={shipmentAnalytics.completion_rate} suffix="%" prefix={<RiseOutlined />} /></Card>
                 </Col>
             </Row>
 
             <Row gutter={[24, 24]}>
                 {/* Visualizations */}
                 <Col xs={24} lg={16}>
-                    <Card title="Shipment Volume (Last 7 Days)" bordered={false} style={{ marginBottom: 24 }}>
-                        <div style={{ height: 300 }}>
+                    <Card title="Shipment Volume (Last 7 Days)" variant="borderless" style={{ marginBottom: 24 }}>
+                        <div style={{ width: '100%', height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={shipmentAnalytics.chart_data || []}>
                                     <defs>
@@ -152,8 +152,8 @@ export default function Analytics() {
                         </div>
                     </Card>
 
-                    <Card title="Driver Performance" bordered={false}>
-                        <div style={{ height: 300 }}>
+                    <Card title="Driver Performance" variant="borderless">
+                        <div style={{ width: '100%', height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={driverAnalytics.slice(0, 10)}>
                                     <CartesianGrid strokeDasharray="3 3" />
@@ -170,8 +170,8 @@ export default function Analytics() {
                 </Col>
 
                 <Col xs={24} lg={8}>
-                    <Card title="Fleet Status" bordered={false} style={{ marginBottom: 24 }}>
-                        <div style={{ height: 300 }}>
+                    <Card title="Fleet Status" variant="borderless" style={{ marginBottom: 24 }}>
+                        <div style={{ width: '100%', height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
@@ -198,7 +198,7 @@ export default function Analytics() {
                         </div>
                     </Card>
 
-                    <Card title="Top Drivers" bordered={false}>
+                    <Card title="Top Drivers" variant="borderless">
                         <Table
                             columns={driverColumns.slice(0, 3)} // Simplified columns
                             dataSource={driverAnalytics.slice(0, 5)}
