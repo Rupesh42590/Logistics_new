@@ -33,7 +33,7 @@ const pickupIcon = new L.DivIcon({
 });
 
 const dropIcon = new L.DivIcon({
-    html: `<div style="background:#ff4d4f;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+    html: `<div style="background:#facc15;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
     </div>`,
     className: '',
@@ -43,7 +43,7 @@ const dropIcon = new L.DivIcon({
 
 const vehicleIcon = new L.DivIcon({
     html: `<div style="background:#262626;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,0.4);animation:pulse 2s infinite;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff4d4f"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
     </div>`,
     className: '',
     iconSize: [36, 36],
@@ -241,7 +241,7 @@ export default function RouteTracking() {
                         {/* Route Line */}
                         <Polyline
                             positions={routePoints.map(p => [p.lat, p.lng])}
-                            pathOptions={{ color: '#ff4d4f', weight: 4, opacity: 0.7, dashArray: '10, 6' }}
+                            pathOptions={{ color: '#facc15', weight: 4, opacity: 0.7, dashArray: '10, 6' }}
                         />
                         {/* Completed portion */}
                         {progress > 0 && (
@@ -323,7 +323,7 @@ export default function RouteTracking() {
                         <Progress
                             percent={progress}
                             strokeColor={{
-                                '0%': '#ff4d4f',
+                                '0%': '#facc15',
                                 '100%': '#52c41a',
                             }}
                             size="small"
@@ -344,7 +344,7 @@ export default function RouteTracking() {
                                             width: 20, height: 20, borderRadius: '50%',
                                             background: isCompleted ? '#262626' : '#f0f0f0',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            border: isCurrent ? '2px solid #ff4d4f' : 'none',
+                                            border: isCurrent ? '2px solid #facc15' : 'none',
                                             flexShrink: 0,
                                         }}>
                                             {isCompleted && <CheckCircleOutlined style={{ fontSize: 10, color: '#fff' }} />}
@@ -376,7 +376,7 @@ export default function RouteTracking() {
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#52c41a' }} />
                                 <div style={{ width: 1, height: 30, background: '#d9d9d9' }} />
-                                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff4d4f' }} />
+                                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#facc15' }} />
                             </div>
                             <div style={{ flex: 1 }}>
                                 <div style={{ marginBottom: 8 }}>

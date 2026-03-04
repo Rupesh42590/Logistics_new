@@ -92,8 +92,8 @@ export default function OperationsMonitor() {
             {/* Exception Panel */}
             {delayedShipments.length > 0 && (
                 <Card
-                    title={<Space><ClockCircleOutlined style={{ color: '#ff4d4f' }} /> <Text type="danger" strong>Delayed Shipments ({delayedShipments.length})</Text></Space>}
-                    style={{ marginBottom: 24, border: '1px solid #ffccc7', background: '#fff1f0' }}
+                    title={<Space><ClockCircleOutlined style={{ color: '#facc15' }} /> <Text type="danger" strong>Delayed Shipments ({delayedShipments.length})</Text></Space>}
+                    style={{ marginBottom: 24, border: '1px solid #93c5fd', background: '#fffbeb' }}
                     bodyStyle={{ padding: 12 }}
                 >
                     <Table

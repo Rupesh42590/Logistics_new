@@ -96,7 +96,7 @@ export default function ReceiveDeliveryModal({ delivery, onClose, onSuccess }) {
                         size="small"
                         style={{
                             width: '100%',
-                            borderColor: isShort ? '#ff4d4f' : undefined,
+                            borderColor: isShort ? '#facc15' : undefined,
                         }}
                         status={isShort ? 'error' : undefined}
                     />
@@ -161,7 +161,7 @@ export default function ReceiveDeliveryModal({ delivery, onClose, onSuccess }) {
 
             <style>{`
         .ant-table-row-shortage td {
-          background: #fff2f0 !important;
+          background: #fffbeb !important;
         }
       `}</style>
         </Modal>

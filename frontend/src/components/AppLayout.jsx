@@ -161,7 +161,7 @@ export default function AppLayout({ children }) {
           left: 0,
           top: 0,
           bottom: 0,
-          background: 'linear-gradient(180deg, #ff4d4f 0%, #ffccc7 100%)',
+          background: 'linear-gradient(180deg, #1677ff 0%, #93c5fd 100%)',
         }}
         trigger={null}
         theme="light"

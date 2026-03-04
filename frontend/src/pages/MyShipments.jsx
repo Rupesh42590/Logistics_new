@@ -206,7 +206,7 @@ export default function MyShipments() {
             />
 
             {user?.role === 'ADMIN' && selectedRowKeys.length > 0 && (
-                <div style={{ marginBottom: 16, padding: '8px 16px', background: '#fff2f0', border: '1px solid #ffccc7', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ marginBottom: 16, padding: '8px 16px', background: '#fffbeb', border: '1px solid #93c5fd', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ color: '#a8071a', fontWeight: 500 }}>Selected {selectedRowKeys.length} items</span>
                     <Button type="primary" danger onClick={() => setIsModalOpen(true)}>
                         Assign / Reassign to Vehicle

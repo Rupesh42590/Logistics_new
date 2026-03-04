@@ -2,27 +2,40 @@
 @import "tailwindcss";
 
 :root {
-  /* LogiSoft Palette - Red/Peach Theme */
-  --primary: #ff4d4f;      /* Red-500 */
-  --primary-hover: #d9363e; /* Red-600 */
-  --secondary: #64748b;    /* Slate-500 */
-  
-  --success: #10b981;      /* Emerald-500 */
-  --warning: #f59e0b;      /* Amber-500 */
-  --danger: #ef4444;       /* Red-500 */
-  --danger-hover: #dc2626; /* Red-600 */
-  
-  --background: #f8fafc;   /* Slate-50 */
-  --surface: #ffffff;      /* White */
-  --border: #e2e8f0;       /* Slate-200 */
-  
-  --text-main: #1e293b;    /* Slate-800 */
-  --text-muted: #64748b;   /* Slate-500 */
-  
-  --radius: 0.75rem;       /* 12px */
+  /* LogiSoft Palette - Yellow/Blue Theme */
+  --primary: #facc15;
+  /* Blue-500 */
+  --primary-hover: #facc15DARK;
+  /* Blue-600 */
+  --secondary: #64748b;
+  /* Slate-500 */
+
+  --success: #10b981;
+  /* Emerald-500 */
+  --warning: #1677ff;
+  /* Yellow-400 */
+  --danger: #ef4444;
+  /* Red-500 */
+  --danger-hover: #dc2626;
+  /* Red-600 */
+
+  --background: #f8fafc;
+  /* Slate-50 */
+  --surface: #ffffff;
+  /* White */
+  --border: #e2e8f0;
+  /* Slate-200 */
+
+  --text-main: #1e293b;
+  /* Slate-800 */
+  --text-muted: #64748b;
+  /* Slate-500 */
+
+  --radius: 0.75rem;
+  /* 12px */
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  
+
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -50,7 +63,9 @@ button {
   font-family: inherit;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -77,15 +92,31 @@ input, select, textarea {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-main);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
-h1 { font-size: 1.875rem; line-height: 2.25rem; }
-h2 { font-size: 1.5rem; line-height: 2rem; }
-h3 { font-size: 1.25rem; line-height: 1.75rem; }
+h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
 
 /* Buttons */
 .btn {
@@ -103,7 +134,7 @@ h3 { font-size: 1.25rem; line-height: 1.75rem; }
 
 .btn-primary {
   background: var(--primary);
-  color: white;
+  color: #1a1a1a;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -186,16 +217,45 @@ h3 { font-size: 1.25rem; line-height: 1.75rem; }
   font-weight: 500;
 }
 
-.badge-success { background: #dcfce7; color: #166534; }
-.badge-warning { background: #fef3c7; color: #92400e; }
-.badge-danger { background: #fee2e2; color: #b91c1c; }
-.badge-neutral { background: #f1f5f9; color: #475569; }
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
 
-.text-xs { font-size: 0.75rem; }
-.text-sm { font-size: 0.875rem; }
-.text-muted { color: var(--text-muted); }
-.mb-1 { margin-bottom: 0.25rem; }
-.block { display: block; }
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-neutral {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.block {
+  display: block;
+}
 
 /* Force Canvas Full Size Override */
 .force-canvas-full {
@@ -213,3 +273,36 @@ h3 { font-size: 1.25rem; line-height: 1.75rem; }
   outline: none;
 }
 
+/* ── Blue Sidebar Menu Overrides ── */
+.custom-sidebar-menu .ant-menu-item {
+  color: #ffffff !important;
+}
+
+.custom-sidebar-menu .ant-menu-item .ant-menu-item-icon,
+.custom-sidebar-menu .ant-menu-item .anticon {
+  color: #ffffff !important;
+}
+
+.custom-sidebar-menu .ant-menu-item:hover {
+  background: rgba(250, 204, 21, 0.18) !important;
+  color: #facc15 !important;
+}
+
+.custom-sidebar-menu .ant-menu-item:hover .anticon {
+  color: #facc15 !important;
+}
+
+.custom-sidebar-menu .ant-menu-item-selected {
+  background: #facc15 !important;
+  color: #1a1a1a !important;
+  border-radius: 8px;
+}
+
+.custom-sidebar-menu .ant-menu-item-selected .anticon,
+.custom-sidebar-menu .ant-menu-item-selected a {
+  color: #1a1a1a !important;
+}
+
+.custom-sidebar-menu .ant-menu-item a {
+  color: inherit !important;
+}

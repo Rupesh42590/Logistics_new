@@ -22,7 +22,7 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const SUGGESTIONS = [
     { label: 'Logistics', icon: <DeploymentUnitOutlined />, color: '#1890ff' },
-    { label: 'Deliveries', icon: <RocketOutlined />, color: '#ff4d4f' },
+    { label: 'Deliveries', icon: <RocketOutlined />, color: '#facc15' },
     { label: 'Warehouses', icon: <HomeOutlined />, color: '#52c41a' },
     { label: 'Cargo', icon: <ContainerOutlined />, color: '#fa8c16' },
     { label: 'Inventory', icon: <AppstoreOutlined />, color: '#722ed1' },
@@ -106,7 +106,7 @@ const GlobalSearchBar = () => {
             return (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0' }}>
                     <span>
-                        <CodeSandboxOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
+                        <CodeSandboxOutlined style={{ marginRight: 8, color: '#facc15' }} />
                         <Text strong>{getHighlightedText(item.tracking_number, searchTerm)}</Text>
                         <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
                             {item.pickup_address?.split(',')[0]} → {item.drop_address?.split(',')[0]}
@@ -160,7 +160,7 @@ const GlobalSearchBar = () => {
 
                 if (shipments?.length > 0) {
                     newOptions.push({
-                        label: <Text strong style={{ color: '#ff4d4f' }}>Shipments</Text>,
+                        label: <Text strong style={{ color: '#facc15' }}>Shipments</Text>,
                         options: shipments.map(s => ({
                             value: `shipment-${s.id}`,
                             type: 'shipment',
@@ -277,7 +277,7 @@ const GlobalSearchBar = () => {
                     placeholder={placeholder}
                     allowClear
                     size="large"
-                    prefix={<SearchOutlined style={{ color: '#ff4d4f', fontSize: 20 }} />}
+                    prefix={<SearchOutlined style={{ color: '#facc15', fontSize: 20 }} />}
                 />
             </AutoComplete>
         </div>

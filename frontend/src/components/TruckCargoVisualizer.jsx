@@ -7,11 +7,11 @@ import * as THREE from 'three';
 /*  Colour helpers                                                     */
 /* ------------------------------------------------------------------ */
 function getFillColor(pct) {
-  return '#ff4d4f';
+  return '#facc15';
 }
 
 function getGlowColor(pct) {
-  return '#ffccc7';
+  return '#93c5fd';
 }
 
 /* ------------------------------------------------------------------ */

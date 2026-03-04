@@ -99,7 +99,7 @@ export default function Signup() {
                         You can now log in as Admin to manage your team — create MSME users and drivers from the Users panel.
                     </Text>
                     <Button type="primary" size="large" onClick={() => navigate('/login')}
-                        style={{ background: '#ff4d4f', borderColor: '#ff4d4f', height: 48, paddingInline: 40, fontWeight: 600 }}>
+                        style={{ background: '#facc15', borderColor: '#facc15', height: 48, paddingInline: 40, fontWeight: 600 }}>
                         Go to Login
                     </Button>
                 </div>
@@ -114,7 +114,7 @@ export default function Signup() {
                 className="auth-hero"
                 style={{
                     flex: 1,
-                    background: 'linear-gradient(135deg, #ff4d4f 0%, #ffccc7 100%)',
+                    background: 'linear-gradient(135deg, #facc15 0%, #93c5fd 100%)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -129,7 +129,7 @@ export default function Signup() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 1 }}>
                     <div style={{ width: 40, height: 40, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <BankOutlined style={{ fontSize: 22, color: '#ff4d4f' }} />
+                        <BankOutlined style={{ fontSize: 22, color: '#facc15' }} />
                     </div>
                     <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>Enterprise Logistics</span>
                 </div>
@@ -266,7 +266,7 @@ export default function Signup() {
                             onClick={handleStep1}
                             block
                             icon={<ArrowRightOutlined />}
-                            style={{ height: 48, fontWeight: 600, fontSize: 15, marginTop: 8, background: '#ff4d4f', borderColor: '#ff4d4f' }}
+                            style={{ height: 48, fontWeight: 600, fontSize: 15, marginTop: 8, background: '#facc15', borderColor: '#facc15' }}
                         >
                             Continue to Location
                         </Button>
@@ -306,7 +306,7 @@ export default function Signup() {
                                 icon={<AimOutlined />}
                                 type="primary"
                                 onClick={handleGo}
-                                style={{ height: 32, background: '#ff4d4f', borderColor: '#ff4d4f' }}
+                                style={{ height: 32, background: '#facc15', borderColor: '#facc15' }}
                             >
                                 Go
                             </Button>
@@ -343,7 +343,7 @@ export default function Signup() {
                                 Back
                             </Button>
                             <Button type="primary" onClick={handleSubmit} loading={loading} block
-                                style={{ height: 48, flex: 2, fontWeight: 600, fontSize: 15, background: '#ff4d4f', borderColor: '#ff4d4f' }}>
+                                style={{ height: 48, flex: 2, fontWeight: 600, fontSize: 15, background: '#facc15', borderColor: '#facc15' }}>
                                 {loading ? 'Registering Company...' : 'Register Company'}
                             </Button>
                         </div>

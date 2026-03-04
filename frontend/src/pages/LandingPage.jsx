@@ -23,7 +23,7 @@ export default function LandingPage() {
 
     const features = [
         {
-            icon: <SendOutlined style={{ fontSize: 28, color: '#ff4d4f' }} />,
+            icon: <SendOutlined style={{ fontSize: 28, color: '#facc15' }} />,
             title: 'Smart Shipments',
             desc: 'Create, track, and manage shipments with real-time status updates and automated dispatch.',
         },
@@ -62,7 +62,7 @@ export default function LandingPage() {
     ];
 
     const roles = [
-        { icon: <TeamOutlined style={{ fontSize: 32, color: '#ff4d4f' }} />, title: 'Admin', desc: 'Full platform control: users, vehicles, zones, analytics, and shipment oversight.' },
+        { icon: <TeamOutlined style={{ fontSize: 32, color: '#facc15' }} />, title: 'Admin', desc: 'Full platform control: users, vehicles, zones, analytics, and shipment oversight.' },
         { icon: <SendOutlined style={{ fontSize: 32, color: '#52c41a' }} />, title: 'MSME / Business', desc: 'Create shipments, track deliveries, and manage your logistics operations.' },
         { icon: <CarOutlined style={{ fontSize: 32, color: '#fa8c16' }} />, title: 'Driver', desc: 'Accept assignments, update delivery status, and confirm deliveries with proof.' },
         { icon: <BarChartOutlined style={{ fontSize: 32, color: '#722ed1' }} />, title: 'Fleet Manager', desc: 'Monitor fleet health, driver performance, and operational efficiency.' },
@@ -244,7 +244,7 @@ export default function LandingPage() {
                 <div className="footer-container">
                     <div className="footer-brand">
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                            <div style={{ width: 32, height: 32, background: '#ff4d4f', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: 32, height: 32, background: '#facc15', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <BankOutlined style={{ fontSize: 16, color: '#fff' }} />
                             </div>
                             <span style={{ fontSize: 16, fontWeight: 700, color: '#262626' }}>Enterprise Logistics</span>

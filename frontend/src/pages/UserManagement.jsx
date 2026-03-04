@@ -72,7 +72,7 @@ export default function UserManagement() {
                 <Space>
                     <Button icon={<ReloadOutlined />} onClick={fetchUsers}>Refresh</Button>
                     <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsAddModalOpen(true)}
-                        style={{ background: '#ff4d4f', borderColor: '#ff4d4f' }}>
+                        style={{ background: '#facc15', borderColor: '#facc15' }}>
                         Add User
                     </Button>
                 </Space>
@@ -134,7 +134,7 @@ function AddUserModal({ open, onClose, onSuccess, headers }) {
         <Modal open={open} title={<><PlusOutlined /> Add User to Company</>}
             onCancel={() => { onClose(); form.resetFields(); setSelectedRole('MSME'); }}
             onOk={() => form.submit()} confirmLoading={loading} okText="Add User"
-            okButtonProps={{ style: { background: '#ff4d4f', borderColor: '#ff4d4f' } }}
+            okButtonProps={{ style: { background: '#facc15', borderColor: '#facc15' } }}
             destroyOnClose>
             <Form form={form} layout="vertical" onFinish={handleSubmit}
                 style={{ marginTop: 16 }} initialValues={{ role: 'MSME' }}>

@@ -147,9 +147,9 @@ const MSMEAnalyticsGraph = ({ data }) => {
                     >
                         <defs>
                             <linearGradient id="colorCount" x1="0" y1="0" x2="1" y2="0">
-                                {/* Side full red (#ff4d4f) to peach (#ffccc7) */}
-                                <stop offset="5%" stopColor="#ff4d4f" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="#ffccc7" stopOpacity={0.8} />
+                                {/* Side full red (#facc15) to peach (#93c5fd) */}
+                                <stop offset="5%" stopColor="#facc15" stopOpacity={0.8} />
+                                <stop offset="95%" stopColor="#93c5fd" stopOpacity={0.8} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -161,7 +161,7 @@ const MSMEAnalyticsGraph = ({ data }) => {
                         <Area
                             type="monotone"
                             dataKey="count"
-                            stroke="#ff4d4f"
+                            stroke="#facc15"
                             fillOpacity={1}
                             fill="url(#colorCount)"
                         />

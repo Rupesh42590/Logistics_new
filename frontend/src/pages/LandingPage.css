@@ -47,7 +47,7 @@
 .nav-logo {
     width: 36px;
     height: 36px;
-    background: #ff4d4f;
+    background: #facc15;
     border-radius: 9px;
     display: flex;
     align-items: center;
@@ -89,13 +89,13 @@
 }
 
 .landing-nav.scrolled .nav-links a:hover {
-    color: #ff4d4f;
+    color: #facc15;
 }
 
 /* --- Hero Section --- */
 .hero-section {
     min-height: 100vh;
-    background: linear-gradient(135deg, #ff4d4f 0%, #ffccc7 100%);
+    background: linear-gradient(135deg, #facc15 0%, #93c5fd 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -225,7 +225,7 @@
     display: inline-block;
     padding: 4px 16px;
     background: #e6f7ff;
-    color: #ff4d4f;
+    color: #facc15;
     border-radius: 100px;
     font-size: 11px;
     font-weight: 700;
@@ -325,7 +325,7 @@
 /* --- CTA Banner --- */
 .cta-section {
     padding: 80px 24px;
-    background: linear-gradient(135deg, #ff4d4f 0%, #ffccc7 100%);
+    background: linear-gradient(135deg, #facc15 0%, #93c5fd 100%);
     text-align: center;
 }
 
@@ -370,7 +370,7 @@
 }
 
 .footer-links a:hover {
-    color: #ff4d4f;
+    color: #facc15;
 }
 
 .footer-bottom {

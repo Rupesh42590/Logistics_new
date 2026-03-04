@@ -38,7 +38,7 @@ export default function Login() {
                 className="auth-hero"
                 style={{
                     flex: 1,
-                    background: 'linear-gradient(135deg, #ff4d4f 0%, #ffccc7 100%)',
+                    background: 'linear-gradient(135deg, #1677ff 0%, #93c5fd 100%)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -65,7 +65,7 @@ export default function Login() {
                             justifyContent: 'center',
                         }}
                     >
-                        <BankOutlined style={{ fontSize: 22, color: '#ff4d4f' }} />
+                        <BankOutlined style={{ fontSize: 22, color: '#facc15' }} />
                     </div>
                     <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>Enterprise Logistics</span>
                 </div>

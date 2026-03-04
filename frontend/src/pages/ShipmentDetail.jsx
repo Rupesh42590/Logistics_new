@@ -131,7 +131,7 @@ export default function ShipmentDetail() {
                             items={(shipment.timeline || [])
                                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
                                 .map(entry => ({
-                                    dot: <div style={{ width: 14, height: 14, border: '2px solid #ff4d4f', borderRadius: '50%', backgroundColor: 'transparent' }} />,
+                                    dot: <div style={{ width: 14, height: 14, border: '2px solid #facc15', borderRadius: '50%', backgroundColor: 'transparent' }} />,
                                     children: (
                                         <div>
                                             <div style={{ fontWeight: 600, marginBottom: 4 }}>{entry.status.replace(/_/g, ' ')}</div>

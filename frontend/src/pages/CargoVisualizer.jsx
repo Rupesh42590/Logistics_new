@@ -99,7 +99,7 @@ export default function CargoVisualizer() {
       }}>
         <div>
           <Title level={3} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <BoxPlotOutlined style={{ color: '#ff4d4f' }} />
+            <BoxPlotOutlined style={{ color: '#facc15' }} />
             3D Cargo Visualizer
           </Title>
           <Text type="secondary" style={{ fontSize: 13 }}>
@@ -217,7 +217,7 @@ export default function CargoVisualizer() {
                 style={{ borderRadius: 16 }}
                 title={
                   <Space>
-                    <CarOutlined style={{ color: '#ff4d4f' }} />
+                    <CarOutlined style={{ color: '#facc15' }} />
                     <span>Vehicle Details</span>
                   </Space>
                 }
@@ -261,7 +261,7 @@ export default function CargoVisualizer() {
                       </div>
                       <Progress
                         percent={pct}
-                        strokeColor="#ff4d4f"
+                        strokeColor="#facc15"
                         trailColor="#f1f5f9"
                         strokeWidth={10}
                         style={{ marginBottom: 4 }}
@@ -292,7 +292,7 @@ export default function CargoVisualizer() {
                       </div>
                       <Progress
                         percent={pct}
-                        strokeColor="#ff4d4f"
+                        strokeColor="#facc15"
                         trailColor="#f1f5f9"
                         strokeWidth={10}
                         style={{ marginBottom: 4 }}
@@ -313,7 +313,7 @@ export default function CargoVisualizer() {
                 border: '1px solid rgba(255, 77, 79, 0.12)',
               }}>
                 <Space>
-                  <InfoCircleOutlined style={{ color: '#ff4d4f', fontSize: 14 }} />
+                  <InfoCircleOutlined style={{ color: '#facc15', fontSize: 14 }} />
                   <Text style={{ fontSize: 12, color: '#cc4040' }}>
                     Drag to rotate · Scroll to zoom · The fill level reflects volume usage.
                   </Text>
@@ -350,7 +350,7 @@ export default function CargoVisualizer() {
                   bodyStyle={{ padding: 0 }}
                   style={{
                     borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
-                    border: selectedVehicleId === v.id ? '2px solid #ff4d4f' : '2px solid transparent',
+                    border: selectedVehicleId === v.id ? '2px solid #facc15' : '2px solid transparent',
                     transition: 'all 0.3s',
                   }}
                   onClick={() => { setSelectedVehicleId(v.id); setViewMode('single'); }}
@@ -380,11 +380,11 @@ export default function CargoVisualizer() {
                     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                       <div style={{ flex: 1 }}>
                         <Text type="secondary" style={{ fontSize: 10 }}>Weight</Text>
-                        <Progress percent={wp} size="small" strokeColor="#ff4d4f" />
+                        <Progress percent={wp} size="small" strokeColor="#facc15" />
                       </div>
                       <div style={{ flex: 1 }}>
                         <Text type="secondary" style={{ fontSize: 10 }}>Volume</Text>
-                        <Progress percent={vp} size="small" strokeColor="#ff4d4f" />
+                        <Progress percent={vp} size="small" strokeColor="#facc15" />
                       </div>
                     </div>
                   </div>

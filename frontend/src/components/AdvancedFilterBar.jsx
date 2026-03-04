@@ -57,7 +57,7 @@ const AdvancedFilterBar = ({ onFilter, statusOptions, initialValues }) => {
                         <Input
                             className="global-search-input"
                             placeholder="Search Shipments..."
-                            prefix={<SearchOutlined style={{ color: '#ff4d4f' }} />}
+                            prefix={<SearchOutlined style={{ color: '#facc15' }} />}
                             style={{ width: 280, borderRadius: '50px' }}
                             allowClear
                         />

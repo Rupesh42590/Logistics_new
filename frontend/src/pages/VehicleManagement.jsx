@@ -121,7 +121,7 @@ export default function VehicleManagement() {
                 const pct = r.weight_capacity > 0 ? (r.current_weight_used / r.weight_capacity) * 100 : 0;
                 return (
                     <div style={{ minWidth: 120 }}>
-                        <Progress percent={Math.round(pct)} size="small" strokeColor="#ff4d4f" />
+                        <Progress percent={Math.round(pct)} size="small" strokeColor="#facc15" />
                         <Text type="secondary" style={{ fontSize: 11 }}>{r.current_weight_used}/{r.weight_capacity} kg</Text>
                     </div>
                 );
@@ -133,7 +133,7 @@ export default function VehicleManagement() {
                 const pct = r.volume_capacity > 0 ? (r.current_volume_used / r.volume_capacity) * 100 : 0;
                 return (
                     <div style={{ minWidth: 120 }}>
-                        <Progress percent={Math.round(pct)} size="small" strokeColor="#ff4d4f" />
+                        <Progress percent={Math.round(pct)} size="small" strokeColor="#facc15" />
                         <Text type="secondary" style={{ fontSize: 11 }}>{r.current_volume_used}/{r.volume_capacity} m³</Text>
                     </div>
                 );

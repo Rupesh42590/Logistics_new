@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                 <Col xs={24} lg={8}>
                     <Card
                         title="Recent Activity"
-                        extra={<Tag color="#ff4d4f">Live Feed</Tag>}
+                        extra={<Tag color="#facc15">Live Feed</Tag>}
                         bordered={false}
                         bodyStyle={{ maxHeight: 450, overflowY: 'auto', padding: '12px 20px' }}
                     >
