@@ -22,7 +22,7 @@ export default function ReceiveDeliveryModal({ delivery, onClose, onSuccess }) {
             id: item.id,
             material_name: item.material_name,
             quantity_expected: item.quantity_expected,
-            quantity_received: item.quantity_expected, // Default: full receipt
+            quantity_received: item.quantity_expected,
             shortage_reason: '',
         }))
     );
@@ -36,7 +36,6 @@ export default function ReceiveDeliveryModal({ delivery, onClose, onSuccess }) {
     };
 
     const handleSubmit = async () => {
-        // Validate shortages have reasons
         const shortagesWithoutReason = items.filter(
             (i) => i.quantity_received < i.quantity_expected && !i.shortage_reason
         );

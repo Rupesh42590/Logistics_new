@@ -36,7 +36,6 @@ const GlobalSearchBar = () => {
     const navigate = useNavigate();
     const debounceRef = useRef(null);
 
-    // Typewriter / Rotating Placeholder State
     const [placeholder, setPlaceholder] = useState('Search for Shipments...');
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
 
@@ -55,7 +54,6 @@ const GlobalSearchBar = () => {
         switch (user?.role) {
             case 'ADMIN': return '/admin';
             case 'MSME': return '/msme';
-            
             case 'DRIVER': return '/driver';
             default: return '/';
         }
@@ -68,21 +66,18 @@ const GlobalSearchBar = () => {
     };
 
     const addToHistory = (item, type, value) => {
-        if (!item || !type) return; // Guard for suggestions
+        if (!item || !type) return;
         const recent = getRecent();
         const newItem = { item, type, value, timestamp: Date.now() };
-        // Determine label string for storage
         if (type === 'shipment') newItem.labelStr = `${item.tracking_number}`;
         else if (type === 'driver') newItem.labelStr = item.name || item.email;
         else if (type === 'vehicle') newItem.labelStr = item.plate_number;
 
-        // Dedupe by value
         const filtered = recent.filter(r => r.value !== value);
         filtered.unshift(newItem);
         localStorage.setItem('recent_logistics_search', JSON.stringify(filtered.slice(0, 5)));
     };
 
-    // --- Highlighting Helper ---
     const getHighlightedText = (text, highlight) => {
         if (!text) return "";
         if (!highlight || highlight.length < 2) return text;
@@ -244,8 +239,6 @@ const GlobalSearchBar = () => {
 
     const onSelect = (value, option) => {
         if (option.type === 'suggestion') {
-            // Just fill the bar or do a broad search, for now fill bar
-            // handleSearch(value); // This would trigger search
             return;
         }
 
@@ -256,7 +249,6 @@ const GlobalSearchBar = () => {
             navigate(`${prefix}/shipments/${option.item.id}`);
         } else if (option.type === 'driver') {
             if (user.role === 'ADMIN') navigate(`/admin/users`);
-            
         } else if (option.type === 'vehicle') {
             navigate(`${prefix}/vehicles`);
         }

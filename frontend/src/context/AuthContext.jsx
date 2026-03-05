@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  // Configure axios defaults
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -33,7 +32,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Global 401 interceptor
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
       (response) => response,

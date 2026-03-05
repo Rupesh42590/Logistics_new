@@ -14,11 +14,8 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
     const [orders, setOrders] = useState([]);
     const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(false);
-    
-    // Selection state
-    const [selectedOrders, setSelectedOrders] = useState([]); // Array of IDs
-    const [selectedVehicle, setSelectedVehicle] = useState(null); // ID
-
+    const [selectedOrders, setSelectedOrders] = useState([]);
+    const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [assigning, setAssigning] = useState(false);
 
     useEffect(() => {
@@ -32,18 +29,11 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
     const fetchData = async () => {
         setLoading(true);
         try {
-            // Fetch Orders
-            const statusParams = mode === 'PENDING' ? 'PENDING' : 'ASSIGNED'; // For reassign, maybe different?
-            // If mode is 'reassign', maybe we fetch ASSIGNED, IN_TRANSIT? 
-            // User likely wants to reassign ASSIGNED ones.
-            
+            const statusParams = mode === 'PENDING' ? 'PENDING' : 'ASSIGNED';
             const ordersRes = await axios.get(`${API}/shipments?status=${statusParams}`, { headers });
             setOrders(ordersRes.data);
 
-            // Fetch Vehicles
             const vehiclesRes = await axios.get(`${API}/vehicles`, { headers });
-            // For assignment, we need vehicles with drivers?
-            // Usually yes.
             setVehicles(vehiclesRes.data);
         } catch (error) {
             console.error(error);
@@ -55,7 +45,7 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
 
     const handleAssign = async () => {
         if (selectedOrders.length === 0 || !selectedVehicle) return;
-        
+
         const vehicle = vehicles.find(v => v.id === selectedVehicle);
         if (!vehicle || !vehicle.current_driver_id) {
             message.error("Selected vehicle has no driver assigned.");
@@ -64,7 +54,7 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
 
         setAssigning(true);
         let successCount = 0;
-        
+
         try {
             await Promise.all(selectedOrders.map(async (orderId) => {
                 await axios.post(`${API}/shipments/${orderId}/assign`, {
@@ -73,7 +63,7 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
                 }, { headers });
                 successCount++;
             }));
-            
+
             message.success(`Assigned ${successCount} orders successfully`);
             if (onSuccess) onSuccess();
             onCancel();
@@ -85,7 +75,7 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
     };
 
     const toggleOrder = (id) => {
-        setSelectedOrders(prev => 
+        setSelectedOrders(prev =>
             prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]
         );
     };
@@ -98,10 +88,10 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
             width={1000}
             footer={[
                 <Button key="cancel" onClick={onCancel}>Cancel</Button>,
-                <Button 
-                    key="submit" 
-                    type="primary" 
-                    loading={assigning} 
+                <Button
+                    key="submit"
+                    type="primary"
+                    loading={assigning}
                     onClick={handleAssign}
                     disabled={selectedOrders.length === 0 || !selectedVehicle}
                 >
@@ -110,7 +100,6 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
             ]}
         >
             <Row gutter={24} style={{ height: '60vh' }}>
-                {/* LEFT: Orders */}
                 <Col span={12} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ marginBottom: 16 }}>
                         <Title level={5}>1. Select Orders ({orders.length})</Title>
@@ -123,10 +112,10 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
                             renderItem={item => {
                                 const isSelected = selectedOrders.includes(item.id);
                                 return (
-                                    <List.Item 
+                                    <List.Item
                                         onClick={() => toggleOrder(item.id)}
-                                        style={{ 
-                                            cursor: 'pointer', 
+                                        style={{
+                                            cursor: 'pointer',
                                             padding: 12,
                                             backgroundColor: isSelected ? '#e6f7ff' : 'transparent',
                                             borderBottom: '1px solid #f0f0f0'
@@ -135,7 +124,8 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
                                         <div style={{ width: '100%' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <Text strong>{item.tracking_number}</Text>
-<Text>{item.status}</Text>                                            </div>
+                                                <Text>{item.status}</Text>
+                                            </div>
                                             <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
                                                 <div>Pickup: {item.pickup_address}</div>
                                                 <div>Drop: {item.drop_address}</div>
@@ -153,7 +143,6 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
                     </div>
                 </Col>
 
-                {/* RIGHT: Vehicles */}
                 <Col span={12} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ marginBottom: 16 }}>
                         <Title level={5}>2. Select Vehicle ({vehicles.length})</Title>
@@ -169,10 +158,10 @@ export default function AssignOrdersModal({ open, onCancel, mode = 'PENDING', on
                                 const remainingWt = item.weight_capacity - item.current_weight_used;
 
                                 return (
-                                    <List.Item 
+                                    <List.Item
                                         onClick={() => hasDriver && setSelectedVehicle(item.id)}
-                                        style={{ 
-                                            cursor: hasDriver ? 'pointer' : 'not-allowed', 
+                                        style={{
+                                            cursor: hasDriver ? 'pointer' : 'not-allowed',
                                             padding: 12,
                                             backgroundColor: isSelected ? '#f6ffed' : 'transparent',
                                             opacity: hasDriver ? 1 : 0.5,

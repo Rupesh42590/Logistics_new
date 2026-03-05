@@ -116,7 +116,6 @@ export default function EditDeliveryModal({ delivery, onClose, onSuccess }) {
             destroyOnClose
         >
             <Form form={form} layout="vertical" onFinish={handleSubmit} style={{ marginTop: 16 }}>
-                {/* Shipment Details */}
                 <Divider orientation="left" orientationMargin={0}>
                     <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Shipment Details
@@ -148,7 +147,6 @@ export default function EditDeliveryModal({ delivery, onClose, onSuccess }) {
                     </Form.Item>
                 )}
 
-                {/* Transport Details */}
                 <Divider orientation="left" orientationMargin={0}>
                     <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Transport (Optional)
@@ -173,7 +171,6 @@ export default function EditDeliveryModal({ delivery, onClose, onSuccess }) {
                     </Col>
                 </Row>
 
-                {/* Manifest Items */}
                 <Divider orientation="left" orientationMargin={0}>
                     <Space>
                         <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>

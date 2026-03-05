@@ -48,8 +48,6 @@ export default function AdminDashboard() {
     });
     const [auditLogs, setAuditLogs] = useState([]);
     const [loading, setLoading] = useState(true);
-    
-    // Modal State
     const [assignModalOpen, setAssignModalOpen] = useState(false);
     const [assignMode, setAssignMode] = useState('PENDING');
 
@@ -90,21 +88,21 @@ export default function AdminDashboard() {
         },
         {
             title: 'Active Shipments',
-            value: stats.vehicles_on_site, // Mapped from backend active_shipments
+            value: stats.vehicles_on_site,
             icon: <CarOutlined />,
             color: '#000000',
             bg: '#f5f5f5',
         },
         {
             title: 'Pending Assign',
-            value: stats.pending_approvals, // Mapped from backend pending_count
+            value: stats.pending_approvals,
             icon: <CheckCircleOutlined />,
             color: '#000000',
             bg: '#f5f5f5',
         },
         {
             title: 'Active Drivers',
-            value: stats.dock_utilization, // Mapped from backend active_drivers
+            value: stats.dock_utilization,
             icon: <TeamOutlined />,
             color: '#000000',
             bg: '#f5f5f5',
@@ -147,7 +145,6 @@ export default function AdminDashboard() {
             path: '/admin/vehicles',
             color: '#f5f5f5',
         },
-
     ];
 
     const getTimelineColor = (action) => {
@@ -179,7 +176,6 @@ export default function AdminDashboard() {
 
     return (
         <div>
-            {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <div>
                     <Title level={3} style={{ margin: 0 }}>Operations Overview</Title>
@@ -189,17 +185,17 @@ export default function AdminDashboard() {
                     <Button icon={<ReloadOutlined />} onClick={fetchDashboardData}>Refresh</Button>
                     <Dropdown menu={{
                         items: [
-                            { 
-                                key: 'assign', 
-                                label: 'Assign Orders', 
-                                icon: <PlusCircleOutlined />, 
-                                onClick: () => { setAssignMode('PENDING'); setAssignModalOpen(true); } 
+                            {
+                                key: 'assign',
+                                label: 'Assign Orders',
+                                icon: <PlusCircleOutlined />,
+                                onClick: () => { setAssignMode('PENDING'); setAssignModalOpen(true); }
                             },
-                            { 
-                                key: 'reassign', 
-                                label: 'Reassign Orders', 
-                                icon: <SwapOutlined />, 
-                                onClick: () => { setAssignMode('ASSIGNED'); setAssignModalOpen(true); } 
+                            {
+                                key: 'reassign',
+                                label: 'Reassign Orders',
+                                icon: <SwapOutlined />,
+                                onClick: () => { setAssignMode('ASSIGNED'); setAssignModalOpen(true); }
                             }
                         ]
                     }}>
@@ -210,7 +206,6 @@ export default function AdminDashboard() {
                 </Space>
             </div>
 
-            {/* Stats Row */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 {statCards.map((s, i) => (
                     <Col xs={24} sm={12} md={8} flex="1" key={i}>
@@ -242,9 +237,7 @@ export default function AdminDashboard() {
                 ))}
             </Row>
 
-            {/* Two Column Layout */}
             <Row gutter={[24, 24]}>
-                {/* Management Modules */}
                 <Col xs={24} lg={16}>
                     <Card title="Management Modules" bordered={false}>
                         <Row gutter={[16, 16]}>
@@ -281,7 +274,6 @@ export default function AdminDashboard() {
                     </Card>
                 </Col>
 
-                {/* Activity Feed */}
                 <Col xs={24} lg={8}>
                     <Card
                         title="Recent Activity"
@@ -316,7 +308,7 @@ export default function AdminDashboard() {
                     </Card>
                 </Col>
             </Row>
-            
+
             <AssignOrdersModal
                 open={assignModalOpen}
                 onCancel={() => setAssignModalOpen(false)}

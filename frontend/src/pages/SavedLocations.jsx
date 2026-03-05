@@ -77,14 +77,14 @@ export default function SavedLocations() {
     };
 
     const columns = [
-        { 
-            title: 'Label', key: 'label', 
+        {
+            title: 'Label', key: 'label',
             render: (_, r) => (
                 <Space>
                     <span style={{ fontWeight: 500 }}>{r.label}</span>
                     {r.is_global && <Tag color="gold" icon={<GlobalOutlined />}>Global</Tag>}
                 </Space>
-            ) 
+            )
         },
         { title: 'Address', dataIndex: 'address', key: 'address' },
         {
@@ -103,7 +103,7 @@ export default function SavedLocations() {
                 return (
                     <Space>
                         {/* <Button icon={<EditOutlined />} size="small" onClick={() => openEdit(r)} disabled={r.is_global && user.role !== 'ADMIN'} /> */}
-                        <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(r.id)} 
+                        <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(r.id)}
                             disabled={r.is_global && user.role !== 'ADMIN'} />
                     </Space>
                 );
@@ -115,9 +115,11 @@ export default function SavedLocations() {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <Title level={3} style={{ margin: 0 }}>Saved Company Locations</Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingId(null); form.resetFields(); setIsModalOpen(true); }}>
-                    Add Location
-                </Button>
+                {user?.role === 'ADMIN' && (
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingId(null); form.resetFields(); setIsModalOpen(true); }}>
+                        Add Location
+                    </Button>
+                )}
             </div>
 
             <Card bordered={false}>
@@ -159,7 +161,7 @@ export default function SavedLocations() {
                             <Input style={{ width: 140 }} />
                         </Form.Item>
                     </Space>
-                    
+
                     {user?.role === 'ADMIN' && (
                         <Form.Item name="is_global" valuePropName="checked">
                             <Checkbox>Share with everyone (Global)</Checkbox>

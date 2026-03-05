@@ -9,8 +9,6 @@ import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/AppLayout';
 import './mobile-overrides.css';
-
-// --- ENTERPRISE IMPORTS ---
 import MSMEDashboard from './pages/MSMEDashboard';
 import MyShipments from './pages/MyShipments';
 import ShipmentDetail from './pages/ShipmentDetail';
@@ -23,7 +21,6 @@ import Settings from './pages/Settings';
 import DriverHistory from './pages/DriverHistory';
 import SavedLocations from './pages/SavedLocations';
 import RouteTracking from './pages/RouteTracking';
-
 import DeliveryReceipt from './pages/DeliveryReceipt';
 import CargoVisualizer from './pages/CargoVisualizer';
 import { AuthProvider } from './context/AuthContext';
@@ -49,7 +46,6 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/receipt/:id" element={<DeliveryReceipt />} />
 
-              {/* ADMIN ROUTES */}
               <Route path="/admin/*" element={
                 <ProtectedRoute role="ADMIN">
                   <AppLayout>
@@ -72,7 +68,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* MSME / BUSINESS ROUTES */}
               <Route path="/msme/*" element={
                 <ProtectedRoute role="MSME">
                   <AppLayout>
@@ -88,7 +83,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* DRIVER ROUTES */}
               <Route path="/driver/*" element={
                 <ProtectedRoute role="DRIVER">
                   <AppLayout>
@@ -103,7 +97,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* Catch-all: redirect unknown routes to landing */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Router>

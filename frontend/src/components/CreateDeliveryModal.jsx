@@ -115,7 +115,6 @@ export default function CreateDeliveryModal({ onClose, onSuccess }) {
             destroyOnClose
         >
             <Form form={form} layout="vertical" onFinish={handleSubmit} style={{ marginTop: 16 }}>
-                {/* Shipment Details */}
                 <Divider orientation="left" orientationMargin={0}>
                     <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Shipment Details
@@ -147,7 +146,6 @@ export default function CreateDeliveryModal({ onClose, onSuccess }) {
                     </Form.Item>
                 )}
 
-                {/* Transport Details */}
                 <Divider orientation="left" orientationMargin={0}>
                     <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Transport (Optional)
@@ -172,7 +170,6 @@ export default function CreateDeliveryModal({ onClose, onSuccess }) {
                     </Col>
                 </Row>
 
-                {/* Manifest Items (Custom, not Ant Design Form.List for simplicity) */}
                 <Divider orientation="left" orientationMargin={0}>
                     <Space>
                         <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
@@ -242,7 +239,6 @@ export default function CreateDeliveryModal({ onClose, onSuccess }) {
                     ))}
                 </div>
 
-                {/* File Upload */}
                 <Divider orientation="left" orientationMargin={0} style={{ marginTop: 24 }}>
                     <Text type="secondary" style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Attachments

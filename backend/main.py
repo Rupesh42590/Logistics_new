@@ -1,3 +1,9 @@
+import sys
+import asyncio
+
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, Query
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -2091,11 +2097,18 @@ async def list_saved_addresses(
     db: AsyncSession = Depends(get_db),
     user: models.User = Depends(get_current_user)
 ):
-    query = select(models.SavedAddress).where(
-        or_(
-            models.SavedAddress.user_id == user.id,
-            models.SavedAddress.is_global == True
+    # Get all user IDs in the same company
+    if user.company_id:
+        company_users_result = await db.execute(
+            select(models.User.id).where(models.User.company_id == user.company_id)
         )
+        company_user_ids = [r[0] for r in company_users_result.fetchall()]
+    else:
+        company_user_ids = [user.id]
+
+    # Return addresses belonging to anyone in the same company
+    query = select(models.SavedAddress).where(
+        models.SavedAddress.user_id.in_(company_user_ids)
     ).order_by(models.SavedAddress.created_at.desc())
     result = await db.execute(query)
     return result.scalars().all()
@@ -2112,9 +2125,14 @@ async def delete_saved_address(
     if not addr:
         raise HTTPException(404, "Address not found")
 
-    # Allow delete if owner OR (admin and is_global)
     if addr.user_id != user.id:
-         if not (user.role == models.UserRole.ADMIN and addr.is_global):
+        addr_owner_result = await db.execute(select(models.User).where(models.User.id == addr.user_id))
+        addr_owner = addr_owner_result.scalars().first()
+        
+        is_same_company = addr_owner and user.company_id and addr_owner.company_id == user.company_id
+        is_admin_global = user.role == models.UserRole.ADMIN and addr.is_global
+        
+        if not (is_same_company or is_admin_global):
             raise HTTPException(403, "Not authorized to delete this address")
 
     await db.delete(addr)

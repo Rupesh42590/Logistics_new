@@ -62,7 +62,6 @@ const getMenuItems = (role) => {
         { key: '/admin/shipments', icon: <SendOutlined />, label: <Link to="/admin/shipments">Shipments</Link> },
         { key: '/admin/locations', icon: <EnvironmentOutlined />, label: <Link to="/admin/locations">Saved Locations</Link> },
         { key: '/admin/vehicles', icon: <CarOutlined />, label: <Link to="/admin/vehicles">Vehicles</Link> },
-
         { key: '/admin/analytics', icon: <FundOutlined />, label: <Link to="/admin/analytics">Analytics</Link> },
         { type: 'divider' },
         { key: '/admin/reports', icon: <BarChartOutlined />, label: <Link to="/admin/reports">Reports</Link> },
@@ -74,7 +73,6 @@ const getMenuItems = (role) => {
       return [
         { key: '/msme', icon: <DashboardOutlined />, label: <Link to="/msme">Dashboard</Link> },
         { key: '/msme/shipments', icon: <SendOutlined />, label: <Link to="/msme/shipments">My Shipments</Link> },
-        { key: '/msme/locations', icon: <EnvironmentOutlined />, label: <Link to="/msme/locations">Saved Company Locations</Link> },
         { type: 'divider' },
         { key: '/msme/settings', icon: <SettingOutlined />, label: <Link to="/msme/settings">Settings</Link> },
       ];
@@ -103,7 +101,7 @@ export default function AppLayout({ children }) {
     if (token) {
       axios.get(`${API}/notifications`, { headers: { Authorization: `Bearer ${token}` } })
         .then(res => {
-          setNotifications(res.data.slice(0, 5)); // Keep top 5
+          setNotifications(res.data.slice(0, 5));
           setUnreadCount(res.data.filter(n => !n.read).length);
         })
         .catch(() => { });
@@ -167,7 +165,6 @@ export default function AppLayout({ children }) {
         theme="light"
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {/* Logo */}
           <div
             style={{
               height: 64,
@@ -202,13 +199,10 @@ export default function AppLayout({ children }) {
             style={{ borderRight: 0, marginTop: 8, background: 'transparent', flex: 1, overflowY: 'auto' }}
             className="custom-sidebar-menu"
           />
-
-
         </div>
       </Sider>
 
       <Layout style={{ marginLeft: collapsed ? 80 : 240, transition: 'margin-left 0.2s' }}>
-        {/* Header */}
         <Header
           style={{
             background: '#fff',
@@ -240,15 +234,7 @@ export default function AppLayout({ children }) {
             </Text>
           </div>
 
-          {/* Center Branding - "Hassy"/Glassy Style */}
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            opacity: 0.8
-          }}>
-
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', opacity: 0.8 }}>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -295,7 +281,7 @@ export default function AppLayout({ children }) {
                   {
                     label: <div style={{ textAlign: 'center', color: '#1890ff' }}>View All</div>,
                     key: 'view-all',
-                    onClick: () => window.location.href = '/admin/operations' // Or dedicated notifications page
+                    onClick: () => window.location.href = '/admin/operations'
                   }
                 ] : [{ label: 'No new notifications', key: 'empty', disabled: true }]
               }}
@@ -341,7 +327,6 @@ export default function AppLayout({ children }) {
           </div>
         </Header>
 
-        {/* Content */}
         <Content
           style={{
             padding: 24,

@@ -33,7 +33,6 @@ export default function Login() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            {/* Left Hero Panel */}
             <div
                 className="auth-hero"
                 style={{
@@ -48,11 +47,9 @@ export default function Login() {
                     overflow: 'hidden',
                 }}
             >
-                {/* Decorative circles */}
                 <div style={{ position: 'absolute', top: -80, right: -80, width: 320, height: 320, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
                 <div style={{ position: 'absolute', bottom: -60, left: -60, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
 
-                {/* Logo */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 1 }}>
                     <div
                         style={{
@@ -70,7 +67,6 @@ export default function Login() {
                     <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>Enterprise Logistics</span>
                 </div>
 
-                {/* Tagline */}
                 <div style={{ position: 'relative', zIndex: 1, maxWidth: 480 }}>
                     <h1 style={{ fontSize: 40, lineHeight: 1.2, fontWeight: 700, marginBottom: 20, color: '#fff' }}>
                         Enterprise logistics, simplified.
@@ -90,13 +86,11 @@ export default function Login() {
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div style={{ position: 'relative', zIndex: 1, fontSize: 13, opacity: 0.4 }}>
                     © 2026 Enterprise Logistics Platform
                 </div>
             </div>
 
-            {/* Right Login Panel */}
             <div
                 style={{
                     flex: 1,
@@ -108,7 +102,6 @@ export default function Login() {
                     maxWidth: 640,
                 }}
             >
-                {/* Back to Home */}
                 <div style={{ marginBottom: 24 }}>
                     <Link to="/" style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <HomeOutlined /> Back to Home

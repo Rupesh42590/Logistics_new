@@ -20,7 +20,6 @@ export default function Signup() {
     const [success, setSuccess] = useState(false);
     const [form] = Form.useForm();
 
-    // Coordinate jump state
     const [coordInput, setCoordInput] = useState({ lat: '', lng: '' });
     const [flyTo, setFlyTo] = useState(null);
     const flyToKey = useRef(0);
@@ -30,7 +29,7 @@ export default function Signup() {
         const lng = parseFloat(coordInput.lng);
         if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
             flyToKey.current += 1;
-            setFlyTo([lat, lng, flyToKey.current]); // key forces re-trigger every time
+            setFlyTo([lat, lng, flyToKey.current]);
             setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
         }
     };
@@ -60,7 +59,6 @@ export default function Signup() {
             setError(null);
             setStep(1);
         } catch {
-            // validation errors shown by antd
         }
     };
 
@@ -109,7 +107,6 @@ export default function Signup() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            {/* Left Hero Panel */}
             <div
                 className="auth-hero"
                 style={{
@@ -158,7 +155,6 @@ export default function Signup() {
                 </div>
             </div>
 
-            {/* Right Signup Panel */}
             <div
                 style={{
                     flex: 1,
@@ -171,7 +167,6 @@ export default function Signup() {
                     overflowY: 'auto',
                 }}
             >
-                {/* Back to Home */}
                 <div style={{ marginBottom: 16 }}>
                     <Link to="/" style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <HomeOutlined /> Back to Home
@@ -185,7 +180,6 @@ export default function Signup() {
                     <Text type="secondary">Create your company workspace — you'll be the Admin</Text>
                 </div>
 
-                {/* Step Indicator */}
                 <Steps
                     current={step}
                     size="small"
@@ -207,7 +201,6 @@ export default function Signup() {
                     />
                 )}
 
-                {/* Step 1: Company & Account Info */}
                 {step === 0 && (
                     <Form form={form} layout="vertical" size="large" initialValues={formData}>
                         <Form.Item name="companyName" label="Company Name" rules={[{ required: true, message: 'Company name is required' }]}>
@@ -273,14 +266,12 @@ export default function Signup() {
                     </Form>
                 )}
 
-                {/* Step 2: Location & Address */}
                 {step === 1 && (
                     <div>
                         <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
                             Pin your company's main location — click on the map, or enter coordinates below to jump directly.
                         </Text>
 
-                        {/* Coordinate jump inputs */}
                         <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'flex-end' }}>
                             <div style={{ flex: 1 }}>
                                 <Text style={{ fontSize: 12, color: '#8c8c8c', display: 'block', marginBottom: 4 }}>Latitude</Text>
@@ -311,7 +302,6 @@ export default function Signup() {
                                 Go
                             </Button>
                         </div>
-
 
                         <div style={{ height: 280, borderRadius: 8, overflow: 'hidden', border: '1px solid #d9d9d9', marginBottom: 16 }}>
                             <LocationPickerMap
@@ -349,7 +339,6 @@ export default function Signup() {
                         </div>
                     </div>
                 )}
-
 
                 <Divider style={{ margin: '16px 0 12px' }}>
                     <Text type="secondary" style={{ fontSize: 13 }}>or</Text>

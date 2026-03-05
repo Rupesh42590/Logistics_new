@@ -30,14 +30,14 @@ export default function MyShipments() {
     const location = useLocation();
     const [shipments, setShipments] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     // Initialize filters from URL params
     const [filters, setFilters] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const status = params.get('status');
         return status ? { status: [status] } : {};
     });
-    
+
     // Bulk Assignment State
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,7 +89,7 @@ export default function MyShipments() {
     useEffect(() => {
         fetchShipments(filters);
         fetchVehicles();
-    }, [fetchShipments, fetchVehicles]); 
+    }, [fetchShipments, fetchVehicles]);
 
     const onSelectChange = (newSelectedRowKeys) => {
         setSelectedRowKeys(newSelectedRowKeys);
@@ -137,7 +137,7 @@ export default function MyShipments() {
 
             if (successCount > 0) message.success(`Successfully assigned ${successCount} shipments`);
             if (failCount > 0) message.error(`Failed to assign ${failCount} shipments`);
-            
+
             setIsModalOpen(false);
             setSelectedRowKeys([]);
             setSelectedVehicle(null);
@@ -161,6 +161,18 @@ export default function MyShipments() {
             render: (t, r) => <a onClick={() => navigate(`${basePath}/shipments/${r.id}`)}>{t}</a>
         },
         {
+            title: 'Type', key: 'order_type', width: 100,
+            render: (_, r) => {
+                if (r.description && r.description.includes('Order Type: Collection')) {
+                    return <Tag color="orange">Collection</Tag>;
+                }
+                if (r.description && r.description.includes('Order Type: Delivery')) {
+                    return <Tag color="blue">Delivery</Tag>;
+                }
+                return null;
+            }
+        },
+        {
             title: 'Item', dataIndex: 'items', key: 'items',
             render: (items) => (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -170,8 +182,26 @@ export default function MyShipments() {
                 </div>
             )
         },
-        { title: 'Pickup', dataIndex: 'pickup_address', key: 'pickup', ellipsis: true, width: 200 },
-        { title: 'Drop', dataIndex: 'drop_address', key: 'drop', ellipsis: true, width: 200 },
+        {
+            title: 'Pickup',
+            key: 'pickup',
+            ellipsis: true,
+            width: 200,
+            render: (_, r) => {
+                const isCollection = r.description && r.description.includes('Order Type: Collection');
+                return <span>{isCollection ? r.drop_address : r.pickup_address}</span>;
+            }
+        },
+        {
+            title: 'Drop',
+            key: 'drop',
+            ellipsis: true,
+            width: 200,
+            render: (_, r) => {
+                const isCollection = r.description && r.description.includes('Order Type: Collection');
+                return <span>{isCollection ? r.pickup_address : r.drop_address}</span>;
+            }
+        },
         { title: 'Weight', dataIndex: 'total_weight', key: 'weight', render: v => `${v} kg`, width: 90 },
         { title: 'Volume', dataIndex: 'total_volume', key: 'volume', render: v => `${v} m³`, width: 90 },
         {

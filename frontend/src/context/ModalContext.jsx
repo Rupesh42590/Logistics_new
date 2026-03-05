@@ -13,7 +13,7 @@ export function ModalProvider({ children }) {
     title: '',
     message: '',
     onConfirm: null,
-    onClose: null, // Optional custom close handler
+    onClose: null,
     loading: false
   });
 
@@ -29,7 +29,7 @@ export function ModalProvider({ children }) {
       isOpen: true,
       title,
       message,
-      onConfirm: null, // No confirm action implies "Alert/Info" mode in ConfirmModal
+      onConfirm: null,
       onClose: onOk,
       loading: false
     });
@@ -42,13 +42,12 @@ export function ModalProvider({ children }) {
       message,
       onConfirm: async () => {
         try {
-            setModalState(prev => ({ ...prev, loading: true }));
-            await onConfirm();
-            setModalState(prev => ({ ...prev, isOpen: false, loading: false }));
+          setModalState(prev => ({ ...prev, loading: true }));
+          await onConfirm();
+          setModalState(prev => ({ ...prev, isOpen: false, loading: false }));
         } catch (error) {
-            console.error("Modal confirm action failed", error);
-            setModalState(prev => ({ ...prev, loading: false }));
-            // Optionally show error alert here, or let the caller handle it
+          console.error("Modal confirm action failed", error);
+          setModalState(prev => ({ ...prev, loading: false }));
         }
       },
       loading: false
