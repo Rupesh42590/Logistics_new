@@ -29,10 +29,11 @@ export default function MSMEDashboard() {
     const [creating, setCreating] = useState(false);
     const [volume, setVolume] = useState(0);
 
-    // ── Locations from admin (read-only for users) ──
+    // ── Company data for order routing ──
+    const [myCompany, setMyCompany] = useState(null);
+    const [otherCompanies, setOtherCompanies] = useState([]);
     const [savedAddresses, setSavedAddresses] = useState([]);
-    const [companyAddresses, setCompanyAddresses] = useState([]);
-    const [loadingAddresses, setLoadingAddresses] = useState(false);
+    const [loadingCompanies, setLoadingCompanies] = useState(false);
 
     // ── Fetch Functions ──
     const fetchShipments = async () => {
@@ -44,19 +45,24 @@ export default function MSMEDashboard() {
         setLoading(false);
     };
 
-    const fetchLocations = async () => {
-        setLoadingAddresses(true);
+    const fetchCompanies = async () => {
+        setLoadingCompanies(true);
         try {
-            const res = await axios.get(`${API}/addresses`, { headers });
-            setSavedAddresses(res.data);
-            setCompanyAddresses(res.data.filter(a => a.company_id === user.company_id));
-        } catch { message.warning('Could not load locations'); }
-        setLoadingAddresses(false);
+            const [meRes, othersRes, addrRes] = await Promise.all([
+                axios.get(`${API}/companies/me`, { headers }),
+                axios.get(`${API}/companies/others`, { headers }),
+                axios.get(`${API}/addresses`, { headers }),
+            ]);
+            setMyCompany(meRes.data);
+            setOtherCompanies(othersRes.data);
+            setSavedAddresses(addrRes.data);
+        } catch { message.warning('Could not load company data'); }
+        setLoadingCompanies(false);
     };
 
     useEffect(() => {
         fetchShipments();
-        fetchLocations();
+        fetchCompanies();
     }, []);
 
     // ── Shipment Stats ──
@@ -67,28 +73,8 @@ export default function MSMEDashboard() {
         delivered: shipments.filter(s => ['DELIVERED', 'CONFIRMED'].includes(s.status)).length,
     };
 
-    // ── Form Handlers ──
-    const handleAddressSelect = (locationId) => {
-        const selected = savedAddresses.find(a => a.id === locationId);
-        if (!selected) return;
-        // For Delivery: vendor location sets drop_address
-        // For Collection: vendor location sets drop_address (vendor is the pickup)
-        form.setFieldsValue({
-            drop_address: selected.address,
-            drop_contact: selected.contact || '',
-            drop_phone: selected.phone || '',
-        });
-    };
-
-    const handleCompanyLocationSelect = (locationId) => {
-        const selected = savedAddresses.find(a => a.id === locationId);
-        if (!selected) return;
-        form.setFieldsValue({
-            pickup_address: selected.address,
-            pickup_contact: selected.contact || '',
-            pickup_phone: selected.phone || '',
-        });
-    };
+    // We no longer need these handlers since we look up the ID at submit time.
+    // They are left blank to avoid errors if referenced elsewhere, but we will remove them from the Selects.
 
     const recalcVolume = () => {
         const l = form.getFieldValue('item_length') || 0;
@@ -100,6 +86,31 @@ export default function MSMEDashboard() {
     const handleCreate = async (values) => {
         setCreating(true);
         try {
+            // Look up the selected location: could be a company (prefixed "company-") or a saved address (prefixed "addr-")
+            const selectedValue = values.vendor_location;
+            let selectedLoc = null;
+
+            if (typeof selectedValue === 'string' && selectedValue.startsWith('company-')) {
+                const compId = parseInt(selectedValue.replace('company-', ''));
+                const comp = otherCompanies.find(c => c.id === compId);
+                if (comp) selectedLoc = { address: comp.address, lat: comp.lat, lng: comp.lng, name: comp.name };
+            } else if (typeof selectedValue === 'string' && selectedValue.startsWith('addr-')) {
+                const addrId = parseInt(selectedValue.replace('addr-', ''));
+                const addr = savedAddresses.find(a => a.id === addrId);
+                if (addr) selectedLoc = { address: addr.address, lat: addr.lat, lng: addr.lng, name: addr.label };
+            }
+
+            if (!selectedLoc) {
+                message.error("Please select a valid location.");
+                setCreating(false);
+                return;
+            }
+            if (!myCompany || !myCompany.lat || !myCompany.lng) {
+                message.error("Your company has no registered location. Please ask your admin to update it.");
+                setCreating(false);
+                return;
+            }
+
             const qty = values.item_qty || 1;
             const weight = values.item_weight || 0;
             const length = values.item_length || 0;
@@ -112,28 +123,42 @@ export default function MSMEDashboard() {
                 name: values.material_description, quantity: qty, weight, length, width, height
             }] : [];
 
-            let finalPickupAddress = values.pickup_address || 'Default Warehouse';
-            let finalPickupContact = values.pickup_contact || 'Dispatch';
-            let finalPickupPhone = values.pickup_phone || '9999999999';
-            let finalDropAddress = values.drop_address;
-            let finalDropContact = values.drop_contact || '';
-            let finalDropPhone = values.drop_phone || '';
+            let finalPickupAddress, finalPickupContact, finalPickupPhone, finalPickupLat, finalPickupLng;
+            let finalDropAddress, finalDropContact, finalDropPhone, finalDropLat, finalDropLng;
 
             if (values.order_type === 'Collection') {
-                // Collection: driver picks up FROM vendor (the location selected as "Pickup Location")
-                // and drops TO company location (selected in "Your Company Location")
-                // In our form: vendor = drop_address (set by handleAddressSelect), company = pickup_address (set by handleCompanyLocationSelect)
-                finalPickupAddress = values.drop_address;             // vendor location (driver picks up from here)
-                finalPickupContact = values.drop_contact || '';
-                finalPickupPhone = values.drop_phone || '';
-                finalDropAddress = values.pickup_address || 'Company Warehouse';  // company location (driver drops here)
-                finalDropContact = values.pickup_contact || '';
-                finalDropPhone = values.pickup_phone || '';
+                // Collection: driver picks up FROM selected location and drops TO user's company
+                finalPickupAddress = selectedLoc.address;
+                finalPickupContact = selectedLoc.name;
+                finalPickupPhone = '';
+                finalPickupLat = selectedLoc.lat;
+                finalPickupLng = selectedLoc.lng;
+
+                finalDropAddress = myCompany.address;
+                finalDropContact = myCompany.name;
+                finalDropPhone = '';
+                finalDropLat = myCompany.lat;
+                finalDropLng = myCompany.lng;
+            } else {
+                // Delivery: driver picks up FROM user's company and drops TO selected location
+                finalPickupAddress = myCompany.address;
+                finalPickupContact = myCompany.name;
+                finalPickupPhone = '';
+                finalPickupLat = myCompany.lat;
+                finalPickupLng = myCompany.lng;
+
+                finalDropAddress = selectedLoc.address;
+                finalDropContact = selectedLoc.name;
+                finalDropPhone = '';
+                finalDropLat = selectedLoc.lat;
+                finalDropLng = selectedLoc.lng;
             }
 
             await axios.post(`${API}/shipments`, {
                 pickup_address: finalPickupAddress, pickup_contact: finalPickupContact, pickup_phone: finalPickupPhone,
+                pickup_lat: finalPickupLat, pickup_lng: finalPickupLng,
                 drop_address: finalDropAddress, drop_contact: finalDropContact, drop_phone: finalDropPhone,
+                drop_lat: finalDropLat, drop_lng: finalDropLng,
                 total_weight: totalWeight, total_volume: totalVolume,
                 description: `PO: ${values.po_number || '-'} | Order Type: ${values.order_type || '-'} | Requested By: ${values.requested_by || '-'}`,
                 special_instructions: values.special_instructions, items,
@@ -177,8 +202,18 @@ export default function MSMEDashboard() {
                 return null;
             }
         },
-        { title: 'Pickup', dataIndex: 'pickup_address', key: 'pickup', ellipsis: true },
-        { title: 'Drop', dataIndex: 'drop_address', key: 'drop', ellipsis: true },
+        { 
+            title: 'Pickup', 
+            key: 'pickup', 
+            render: (_, r) => r.pickup_lat && r.pickup_lng ? `${r.pickup_lat.toFixed(4)}, ${r.pickup_lng.toFixed(4)}` : r.pickup_address,
+            ellipsis: true 
+        },
+        { 
+            title: 'Drop', 
+            key: 'drop', 
+            render: (_, r) => r.drop_lat && r.drop_lng ? `${r.drop_lat.toFixed(4)}, ${r.drop_lng.toFixed(4)}` : r.drop_address,
+            ellipsis: true 
+        },
         { title: 'Weight', dataIndex: 'total_weight', key: 'weight', render: v => `${v} kg`, width: 90 },
         {
             title: 'Status', dataIndex: 'status', key: 'status', width: 120,
@@ -195,6 +230,10 @@ export default function MSMEDashboard() {
             )
         },
     ];
+
+    const handleOrderTypeChange = (type) => {
+        form.resetFields(['vendor_location']);
+    };
 
     return (
         <div>
@@ -248,13 +287,6 @@ export default function MSMEDashboard() {
             >
                 <Form form={form} layout="vertical" onFinish={handleCreate}
                     initialValues={{ requested_by: user?.name || '' }}>
-                    {/* Hidden fields for backend */}
-                    <Form.Item name="pickup_address" hidden><Input /></Form.Item>
-                    <Form.Item name="pickup_contact" hidden><Input /></Form.Item>
-                    <Form.Item name="pickup_phone" hidden><Input /></Form.Item>
-                    <Form.Item name="drop_address" hidden><Input /></Form.Item>
-                    <Form.Item name="drop_contact" hidden><Input /></Form.Item>
-                    <Form.Item name="drop_phone" hidden><Input /></Form.Item>
 
                     {/* Row 1: Location + Date */}
                     <Row gutter={16}>
@@ -263,16 +295,24 @@ export default function MSMEDashboard() {
                                 {({ getFieldValue }) => {
                                     const isCollection = getFieldValue('order_type') === 'Collection';
                                     return (
-                                        <Form.Item name="vendor_location" label={isCollection ? "Pickup Location" : "Vendor / Location"}
+                                        <Form.Item name="vendor_location" label={isCollection ? "Pickup Location" : "Drop-off Location"}
                                             rules={[{ required: true, message: 'Please select a location' }]}>
                                             <Select
-                                                placeholder={loadingAddresses ? 'Loading...' : 'Select location'}
-                                                loading={loadingAddresses}
-                                                onChange={handleAddressSelect}
-                                                options={savedAddresses.map(a => ({ label: a.label, value: a.id }))}
+                                                placeholder={loadingCompanies ? 'Loading...' : 'Select location'}
+                                                loading={loadingCompanies}
                                                 showSearch
-                                                filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
-                                                notFoundContent={savedAddresses.length === 0 && !loadingAddresses ? 'No locations available — contact your admin' : null}
+                                                filterOption={(input, option) => (option.label || '').toLowerCase().includes(input.toLowerCase())}
+                                                notFoundContent={otherCompanies.length === 0 && savedAddresses.length === 0 && !loadingCompanies ? 'No locations available' : null}
+                                                options={[
+                                                    ...(otherCompanies.length > 0 ? [{
+                                                        label: 'Companies',
+                                                        options: otherCompanies.map(c => ({ label: c.name, value: `company-${c.id}` }))
+                                                    }] : []),
+                                                    ...(savedAddresses.length > 0 ? [{
+                                                        label: 'Saved Locations',
+                                                        options: savedAddresses.map(a => ({ label: a.label, value: `addr-${a.id}` }))
+                                                    }] : []),
+                                                ]}
                                             />
                                         </Form.Item>
                                     );
@@ -293,7 +333,7 @@ export default function MSMEDashboard() {
                                 <Select placeholder="Select type" options={[
                                     { label: 'Collection', value: 'Collection' },
                                     { label: 'Delivery', value: 'Delivery' },
-                                ]} onChange={() => form.resetFields(['vendor_location', 'company_location'])} />
+                                ]} onChange={handleOrderTypeChange} />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -303,31 +343,7 @@ export default function MSMEDashboard() {
                         </Col>
                     </Row>
 
-                    {/* Row 2b: Company location selector (Collection only) */}
-                    <Form.Item noStyle shouldUpdate={(prev, cur) => prev.order_type !== cur.order_type}>
-                        {({ getFieldValue }) => {
-                            const isCollection = getFieldValue('order_type') === 'Collection';
-                            if (!isCollection) return null;
-                            return (
-                                <Form.Item
-                                    name="company_location"
-                                    label="Your Company Location (Drop-off Point)"
-                                    rules={[{ required: true, message: 'Please select your company location' }]}
-                                    extra="Items will be collected and delivered to this location"
-                                >
-                                    <Select
-                                        placeholder={loadingAddresses ? 'Loading...' : 'Select your company location'}
-                                        loading={loadingAddresses}
-                                        onChange={handleCompanyLocationSelect}
-                                        options={savedAddresses.map(a => ({ label: `${a.label} – ${a.address}`, value: a.id }))}
-                                        showSearch
-                                        filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
-                                        notFoundContent={savedAddresses.length === 0 && !loadingAddresses ? 'No locations available — contact your admin' : null}
-                                    />
-                                </Form.Item>
-                            );
-                        }}
-                    </Form.Item>
+
 
                     {/* Row 3: Material + Quantity */}
                     <Row gutter={16}>

@@ -25,6 +25,7 @@ import RouteTracking from './pages/RouteTracking';
 import DeliveryReceipt from './pages/DeliveryReceipt';
 import CargoVisualizer from './pages/CargoVisualizer';
 import NotificationsPage from './pages/NotificationsPage';
+import TrackOrders from './pages/TrackOrders';
 import { AuthProvider } from './context/AuthContext';
 import { ModalProvider } from './context/ModalContext';
 
@@ -59,6 +60,7 @@ function App() {
                       <Route path="zones" element={<ZoneManagement />} />
                       <Route path="analytics" element={<Analytics />} />
                       <Route path="reports" element={<Reports />} />
+                      <Route path="track-orders" element={<TrackOrders />} />
                       <Route path="shipments" element={<AdminOperations />} />
                       <Route path="shipments/:id" element={<ShipmentDetail />} />
                       <Route path="locations" element={<AdminOperations />} />

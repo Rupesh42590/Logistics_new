@@ -211,9 +211,6 @@ export default function MyShipments() {
             render: (_, r) => (
                 <div style={{ display: 'flex', gap: 4 }}>
                     <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`${basePath}/shipments/${r.id}`)} />
-                    {['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(r.status) && (
-                        <Button size="small" icon={<CompassOutlined />} onClick={() => navigate(`${basePath}/track/${r.id}`)} title="Track" />
-                    )}
                 </div>
             )
         },

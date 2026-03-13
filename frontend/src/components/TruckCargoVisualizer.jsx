@@ -245,15 +245,7 @@ function CameraRig() {
 }
 
 function GroundGrid() {
-  return (
-    <group>
-      <gridHelper args={[12, 24, '#d1d5db', '#e5e7eb']} position={[0, -1.1, 0]} />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.12, 0]}>
-        <planeGeometry args={[12, 12]} />
-        <meshStandardMaterial color="#f9fafb" />
-      </mesh>
-    </group>
-  );
+  return null; // Removed ground grid for deep space dark aesthetic
 }
 
 const ExpandIcon = () => (
@@ -304,6 +296,8 @@ export default function TruckCargoVisualizer({
     return () => document.removeEventListener('fullscreenchange', handler);
   }, []);
 
+  const boxesCount = Math.round(displayPct * 20); // rough estimate logic
+
   return (
     <div
       ref={containerRef}
@@ -314,9 +308,10 @@ export default function TruckCargoVisualizer({
         top: isFullscreen ? 0 : 'auto',
         left: isFullscreen ? 0 : 'auto',
         zIndex: isFullscreen ? 9999 : 1,
-        borderRadius: isFullscreen ? 0 : 16,
+        borderRadius: isFullscreen ? 0 : 8,
         overflow: 'hidden',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%)',
+        background: '#0a0a0a',
+        fontFamily: 'Inter, sans-serif',
         ...style,
       }}
     >
@@ -324,32 +319,87 @@ export default function TruckCargoVisualizer({
         shadows
         className="force-canvas-full"
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'block' }}
-        gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.3 }}
+        gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         camera={{ fov: 40, near: 0.1, far: 50 }}
       >
-        <color attach="background" args={['#f1f5f9']} />
+        <color attach="background" args={['#0a0a0a']} />
         <CameraRig />
         <OrbitControls
           enablePan={false}
           enableZoom={true}
           minDistance={3}
-          maxDistance={10}
-          minPolarAngle={0.3}
-          maxPolarAngle={Math.PI / 2 - 0.1}
-          autoRotate
-          autoRotateSpeed={0.8}
+          maxDistance={15}
+          minPolarAngle={0}
+          maxPolarAngle={Math.PI / 2 + 0.1}
+          autoRotate={false}
         />
 
-        <ambientLight intensity={1.0} />
-        <hemisphereLight intensity={0.6} color="#ffffff" groundColor="#e8ddd0" />
-        <directionalLight position={[5, 8, 5]} intensity={1.4} castShadow shadow-mapSize={[1024, 1024]} />
-        <directionalLight position={[-3, 4, -2]} intensity={0.5} color="#f5e6d0" />
-        <pointLight position={[0, 3, 0]} intensity={0.4} color="#f8fafc" />
+        <ambientLight intensity={0.5} color="#fff" />
+        <hemisphereLight intensity={0.2} color="#ffffff" groundColor="#000000" />
+        <directionalLight position={[5, 8, 5]} intensity={1.5} castShadow />
 
-        <TruckModel fillPct={displayPct} vehicleType={vehicleType} />
-        <GroundGrid />
-        <ContactShadows position={[0, -1.09, 0]} opacity={0.25} scale={10} blur={2.5} />
+        <group scale={[0.8, 0.8, 0.8]} position={[0, 0.5, 0]}>
+            {/* Draw just the bounding box wireframe instead of full truck */}
+            <lineSegments position={[0, 0, 0]}>
+                <edgesGeometry args={[new THREE.BoxGeometry(2, 1.5, 4.5)]} />
+                <lineBasicMaterial color="#ef4444" transparent opacity={0.4} linewidth={1} />
+            </lineSegments>
+            <CargoBoxes fillPct={displayPct} cargoWidth={2} cargoHeight={1.5} cargoDepth={4.5} />
+        </group>
       </Canvas>
+
+      {/* Top Header Overlay (if not rendered by a parent modal) */}
+      <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0,
+          padding: '16px 24px', display: 'flex', justifyContent: 'space-between',
+          color: '#fff', pointerEvents: 'none'
+      }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+             <span style={{ fontWeight: 600, fontSize: 16 }}>3D Packing View &ndash; {plateNumber || vehicleName}</span>
+          </div>
+      </div>
+
+      {/* Panels */}
+      <div style={{ position: 'absolute', top: 60, right: 24, display: 'flex', justifyContent: 'flex-end', pointerEvents: 'none', alignItems: 'flex-start' }}>
+          
+          {/* Right Panel: Statistics */}
+          <div style={{ background: '#000', border: '1px solid #333', borderRadius: 8, padding: 16, width: 240, pointerEvents: 'auto' }}>
+              <div style={{ color: '#fff', fontWeight: 600, fontSize: 13, marginBottom: 16 }}>Statistics</div>
+              
+              <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
+                      <span style={{ color: '#9ca3af', fontSize: 12 }}>Volume Utilization:</span>
+                      <span style={{ background: '#ef4444', color: '#fff', padding: '2px 6px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>{volumePct.toFixed(1)}%</span>
+                  </div>
+                  <div style={{ color: '#d1d5db', fontSize: 11 }}>
+                      {volumeUsed.toFixed(2)} m³ / {volumeCapacity.toFixed(2)} m³
+                  </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid #333', paddingTop: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
+                      <span style={{ color: '#9ca3af', fontSize: 12 }}>Weight Utilization:</span>
+                      <span style={{ background: '#3b82f6', color: '#fff', padding: '2px 6px', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>{weightPct.toFixed(1)}%</span>
+                  </div>
+                  <div style={{ color: '#d1d5db', fontSize: 11 }}>
+                      {weightUsed.toFixed(0)} kg / {weightCapacity.toFixed(0)} kg
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      {/* Bottom Controls */}
+      <div style={{
+          position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+          background: '#000', border: '1px solid #333',
+          padding: '8px 16px', borderRadius: 20, display: 'flex', gap: 16, pointerEvents: 'none',
+      }}>
+          <span style={{ color: '#9ca3af', fontSize: 11 }}>Hover for info</span>
+          <span style={{ color: '#444' }}>|</span>
+          <span style={{ color: '#9ca3af', fontSize: 11 }}>Drag to rotate</span>
+          <span style={{ color: '#444' }}>|</span>
+          <span style={{ color: '#9ca3af', fontSize: 11 }}>Scroll to zoom</span>
+      </div>
 
       <button
         onClick={toggleFullscreen}
@@ -357,14 +407,13 @@ export default function TruckCargoVisualizer({
         style={{
           position: 'absolute', top: 16, right: 16,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)',
-          background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)',
-          cursor: 'pointer', color: '#475569', transition: 'all 0.2s',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+          width: 32, height: 32, borderRadius: 8, border: 'none',
+          background: 'transparent',
+          cursor: 'pointer', color: '#9ca3af', transition: 'all 0.2s',
           zIndex: 10,
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#1e293b'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.85)'; e.currentTarget.style.color = '#475569'; }}
+        onMouseEnter={e => { e.currentTarget.style.color = '#fff'; }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#9ca3af'; }}
       >
         {isFullscreen ? <ShrinkIcon /> : <ExpandIcon />}
       </button>

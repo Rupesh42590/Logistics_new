@@ -53,6 +53,9 @@ class CompanyResponse(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
+    address: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     created_at: datetime.datetime
 
     class Config:
@@ -62,6 +65,9 @@ class RegisterCompanyRequest(BaseModel):
     """One-step: create company + admin user"""
     company_name: str
     company_description: Optional[str] = None
+    company_address: Optional[str] = None
+    company_lat: Optional[float] = None
+    company_lng: Optional[float] = None
     admin_name: str
     admin_email: EmailStr
     admin_password: str

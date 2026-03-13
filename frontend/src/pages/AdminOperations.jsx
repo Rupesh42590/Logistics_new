@@ -11,7 +11,6 @@ import {
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import AdvancedFilterBar from '../components/AdvancedFilterBar';
-import TruckCargoVisualizer from '../components/TruckCargoVisualizer';
 
 const { Title, Text } = Typography;
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -44,8 +43,6 @@ export default function AdminOperations() {
         return status ? { status: [status] } : {};
     });
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [assignModalOpen, setAssignModalOpen] = useState(false);
-    const [selectedVehicleForAssign, setSelectedVehicleForAssign] = useState(null);
     const [assigning, setAssigning] = useState(false);
 
     // ── Vehicle State ──
@@ -55,7 +52,6 @@ export default function AdminOperations() {
     const [vehModalOpen, setVehModalOpen] = useState(false);
     const [editingVehicle, setEditingVehicle] = useState(null);
     const [vehForm] = Form.useForm();
-    const [cargoViewVehicle, setCargoViewVehicle] = useState(null);
 
     // ── Location State ──
     const [locations, setLocations] = useState([]);
@@ -134,28 +130,34 @@ export default function AdminOperations() {
     const rowSelection = {
         selectedRowKeys,
         onChange: setSelectedRowKeys,
-        getCheckboxProps: (record) => ({ disabled: !['PENDING', 'ASSIGNED'].includes(record.status) }),
+        getCheckboxProps: (record) => ({ disabled: record.status !== 'PENDING' }),
     };
 
-    const handleBulkAssign = async () => {
-        if (!selectedVehicleForAssign) { message.error("Please select a vehicle"); return; }
-        const vehicle = vehicles.find(v => v.id === selectedVehicleForAssign);
+    const handleAssignToVehicle = async (vehicleId) => {
+        if (selectedRowKeys.length === 0) { message.error("Please select shipments first"); return; }
+        const vehicle = vehicles.find(v => v.id === vehicleId);
         if (!vehicle?.current_driver_id) { message.error("Vehicle has no driver assigned."); return; }
-        setAssigning(true);
-        let ok = 0, fail = 0;
-        try {
-            await Promise.all(selectedRowKeys.map(async (sid) => {
+        Modal.confirm({
+            title: `Assign ${selectedRowKeys.length} shipment(s) to ${vehicle.name}?`,
+            content: 'This will dispatch the shipment(s) to the driver of this vehicle.',
+            onOk: async () => {
+                setAssigning(true);
+                let ok = 0, fail = 0;
                 try {
-                    await axios.post(`${API}/shipments/${sid}/assign`, { vehicle_id: vehicle.id, driver_id: vehicle.current_driver_id }, { headers });
-                    ok++;
-                } catch { fail++; }
-            }));
-            if (ok) message.success(`Assigned ${ok} shipments`);
-            if (fail) message.error(`Failed ${fail}`);
-            setAssignModalOpen(false); setSelectedRowKeys([]); setSelectedVehicleForAssign(null);
-            fetchShipments(filters); fetchVehiclesAndDrivers();
-        } catch { message.error("Bulk assignment failed"); }
-        setAssigning(false);
+                    await Promise.all(selectedRowKeys.map(async (sid) => {
+                        try {
+                            await axios.post(`${API}/shipments/${sid}/assign`, { vehicle_id: vehicle.id, driver_id: vehicle.current_driver_id }, { headers });
+                            ok++;
+                        } catch { fail++; }
+                    }));
+                    if (ok) message.success(`Assigned ${ok} shipment(s)`);
+                    if (fail) message.error(`Failed ${fail}`);
+                    setSelectedRowKeys([]);
+                    fetchShipments(filters); fetchVehiclesAndDrivers();
+                } catch { message.error("Bulk assignment failed"); }
+                setAssigning(false);
+            }
+        });
     };
 
     // ═══════════════════════════════════════════════
@@ -183,7 +185,8 @@ export default function AdminOperations() {
     // ═══════════════════════════════════════════════
     const handleAddLocation = async (values) => {
         try {
-            await axios.post(`${API}/addresses`, values, { headers });
+            const payload = { ...values, is_global: true };
+            await axios.post(`${API}/addresses`, payload, { headers });
             message.success('Location added');
             setLocModalOpen(false); locForm.resetFields(); fetchLocations();
         } catch { message.error('Failed to add location'); }
@@ -236,45 +239,35 @@ export default function AdminOperations() {
             render: (_, r) => (
                 <Space size={4}>
                     <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/admin/shipments/${r.id}`)} />
-                    {['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(r.status) && (
-                        <Button size="small" icon={<CompassOutlined />} onClick={() => navigate(`/admin/track/${r.id}`)} title="Track" />
-                    )}
                 </Space>
             )
         },
     ];
 
     const vehicleColumns = [
+        ...(selectedRowKeys.length > 0 ? [{
+            title: '',
+            key: 'assign',
+            width: 50,
+            render: (_, r) => (
+                <Checkbox
+                    disabled={!r.current_driver_id}
+                    onChange={(e) => {
+                        if (e.target.checked) {
+                            handleAssignToVehicle(r.id);
+                        }
+                    }}
+                    checked={false}
+                />
+            )
+        }] : []),
         { title: 'Name', dataIndex: 'name', key: 'name', render: t => <Space><CarOutlined /><Text strong>{t}</Text></Space> },
         { title: 'Plate #', dataIndex: 'plate_number', key: 'plate', render: t => <Tag>{t}</Tag> },
         {
             title: 'Status', dataIndex: 'status', key: 'status',
             render: s => <Tag color={VEHICLE_STATUS_COLORS[s]}>{s.replace('_', ' ')}</Tag>
         },
-        {
-            title: 'Weight', key: 'weight_cap',
-            render: (_, r) => {
-                const pct = r.weight_capacity > 0 ? (r.current_weight_used / r.weight_capacity) * 100 : 0;
-                return (
-                    <div style={{ minWidth: 120 }}>
-                        <Progress percent={Math.round(pct)} size="small" strokeColor="#facc15" />
-                        <Text type="secondary" style={{ fontSize: 11 }}>{r.current_weight_used}/{r.weight_capacity} kg</Text>
-                    </div>
-                );
-            },
-        },
-        {
-            title: 'Volume', key: 'vol_cap',
-            render: (_, r) => {
-                const pct = r.volume_capacity > 0 ? (r.current_volume_used / r.volume_capacity) * 100 : 0;
-                return (
-                    <div style={{ minWidth: 120 }}>
-                        <Progress percent={Math.round(pct)} size="small" strokeColor="#facc15" />
-                        <Text type="secondary" style={{ fontSize: 11 }}>{r.current_volume_used}/{r.volume_capacity} m³</Text>
-                    </div>
-                );
-            },
-        },
+
         {
             title: 'Driver', dataIndex: 'current_driver_id', key: 'driver',
             render: did => drivers.find(d => d.id === did)?.name || '-'
@@ -284,7 +277,6 @@ export default function AdminOperations() {
             render: (_, r) => (
                 <Space size={4}>
                     <Tooltip title="Edit"><Button size="small" icon={<EditOutlined />} onClick={() => openVehEdit(r)} /></Tooltip>
-                    <Tooltip title="3D Cargo"><Button size="small" icon={<EyeOutlined />} onClick={() => setCargoViewVehicle(r)} /></Tooltip>
                 </Space>
             ),
         },
@@ -330,8 +322,7 @@ export default function AdminOperations() {
 
             {selectedRowKeys.length > 0 && (
                 <div style={{ marginBottom: 16, padding: '8px 16px', background: '#fffbeb', border: '1px solid #93c5fd', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontWeight: 500 }}>Selected {selectedRowKeys.length} items</span>
-                    <Button type="primary" danger onClick={() => setAssignModalOpen(true)}>Assign / Reassign to Vehicle</Button>
+                    <span style={{ fontWeight: 500 }}>Selected {selectedRowKeys.length} shipment(s). Check the box on the left of a vehicle below to dispatch.</span>
                 </div>
             )}
 
@@ -382,29 +373,7 @@ export default function AdminOperations() {
 
             {/* ─── MODALS ─── */}
 
-            {/* Assign Shipments Modal */}
-            <Modal title="Bulk Assign Shipments" open={assignModalOpen} onOk={handleBulkAssign}
-                onCancel={() => setAssignModalOpen(false)} confirmLoading={assigning} okText="Assign">
-                <p>Assign <b>{selectedRowKeys.length}</b> shipments to:</p>
-                <Select style={{ width: '100%' }} placeholder="Select a Vehicle"
-                    onChange={setSelectedVehicleForAssign} value={selectedVehicleForAssign}
-                    options={vehicles.map(v => {
-                        const remWt = v.weight_capacity - v.current_weight_used;
-                        return {
-                            value: v.id,
-                            label: (
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>{v.plate_number} ({v.name})</span>
-                                    <span style={{ fontSize: 11, color: '#999' }}>
-                                        {v.current_driver_id ? 'Has Driver' : 'No Driver'} | {remWt}kg left
-                                    </span>
-                                </div>
-                            ),
-                            disabled: !v.current_driver_id
-                        };
-                    })}
-                />
-            </Modal>
+
 
             {/* Add/Edit Vehicle Modal */}
             <Modal title={editingVehicle ? 'Edit Vehicle' : 'Add Vehicle'} open={vehModalOpen}
@@ -452,32 +421,6 @@ export default function AdminOperations() {
                 </Form>
             </Modal>
 
-            {/* 3D Cargo View Modal */}
-            <Modal
-                title={<Space><CarOutlined /><span>{cargoViewVehicle?.name} ({cargoViewVehicle?.plate_number})</span></Space>}
-                open={!!cargoViewVehicle} onCancel={() => setCargoViewVehicle(null)} footer={null}
-                width={800} centered bodyStyle={{ padding: 0, overflow: 'hidden' }} destroyOnClose>
-                {cargoViewVehicle && (
-                    <div style={{ height: 500, background: '#f8fafc', position: 'relative' }}>
-                        <TruckCargoVisualizer
-                            weightUsed={cargoViewVehicle.current_weight_used} weightCapacity={cargoViewVehicle.weight_capacity}
-                            volumeUsed={cargoViewVehicle.current_volume_used} volumeCapacity={cargoViewVehicle.volume_capacity}
-                            vehicleType={cargoViewVehicle.vehicle_type} vehicleName={cargoViewVehicle.name}
-                            plateNumber={cargoViewVehicle.plate_number} height="100%"
-                            style={{ width: '100%', height: '100%' }} showLabels={false}
-                        />
-                        <div style={{
-                            position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-                            background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(4px)',
-                            padding: '6px 16px', borderRadius: 20, display: 'flex', gap: 16, pointerEvents: 'none',
-                        }}>
-                            <Text type="secondary" style={{ fontSize: 12 }}>🖱️ Drag to Rotate</Text>
-                            <Text type="secondary" style={{ fontSize: 12 }}>🔍 Scroll to Zoom</Text>
-                        </div>
-                    </div>
-                )}
-            </Modal>
-
             {/* Add Location Modal */}
             <Modal title="Add New Location" open={locModalOpen} onCancel={() => setLocModalOpen(false)} footer={null}>
                 <Form form={locForm} layout="vertical" onFinish={handleAddLocation}>
@@ -495,7 +438,7 @@ export default function AdminOperations() {
                             <InputNumber style={{ width: 140 }} precision={6} />
                         </Form.Item>
                     </Space>
-                    <Space style={{ display: 'flex' }} align="baseline">
+                    <Space style={{ display: 'flex', marginBottom: 24 }} align="baseline">
                         <Form.Item name="contact" label="Contact Person">
                             <Input style={{ width: 140 }} />
                         </Form.Item>
@@ -503,9 +446,6 @@ export default function AdminOperations() {
                             <Input style={{ width: 140 }} />
                         </Form.Item>
                     </Space>
-                    <Form.Item name="is_global" valuePropName="checked">
-                        <Checkbox>Share with everyone (Global)</Checkbox>
-                    </Form.Item>
                     <div style={{ textAlign: 'right', marginTop: 16 }}>
                         <Button onClick={() => setLocModalOpen(false)} style={{ marginRight: 8 }}>Cancel</Button>
                         <Button type="primary" htmlType="submit">Save Location</Button>

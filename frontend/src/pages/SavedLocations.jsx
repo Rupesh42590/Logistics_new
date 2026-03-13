@@ -35,6 +35,7 @@ export default function SavedLocations() {
 
     const handleAddEdit = async (values) => {
         try {
+            const payload = { ...values, is_global: true };
             if (editingId) {
                 // Editing not fully supported by backend yet (only create/delete), 
                 // but if we added PUT it would go here. For now, we'll just re-create or show error.
@@ -42,7 +43,7 @@ export default function SavedLocations() {
                 // Let's implement CREATE for now as user asked to "add locations".
                 message.info('Editing is not supported yet, please delete and re-create.');
             } else {
-                await axios.post(`${API}/addresses`, values, { headers });
+                await axios.post(`${API}/addresses`, payload, { headers });
                 message.success('Location added successfully');
             }
             setIsModalOpen(false);
@@ -153,7 +154,7 @@ export default function SavedLocations() {
                             <InputNumber style={{ width: 140 }} precision={6} />
                         </Form.Item>
                     </Space>
-                    <Space style={{ display: 'flex' }} align="baseline">
+                    <Space style={{ display: 'flex', marginBottom: 24 }} align="baseline">
                         <Form.Item name="contact" label="Contact Person">
                             <Input style={{ width: 140 }} />
                         </Form.Item>
@@ -161,12 +162,6 @@ export default function SavedLocations() {
                             <Input style={{ width: 140 }} />
                         </Form.Item>
                     </Space>
-
-                    {user?.role === 'ADMIN' && (
-                        <Form.Item name="is_global" valuePropName="checked">
-                            <Checkbox>Share with everyone (Global)</Checkbox>
-                        </Form.Item>
-                    )}
 
                     <div style={{ textAlign: 'right', marginTop: 16 }}>
                         <Button onClick={() => setIsModalOpen(false)} style={{ marginRight: 8 }}>Cancel</Button>

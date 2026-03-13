@@ -59,8 +59,8 @@ const getMenuItems = (role) => {
     case 'ADMIN':
       return [
         { key: '/admin', icon: <DashboardOutlined />, label: <Link to="/admin">Dashboard</Link> },
-        { type: 'divider' },
         { key: '/admin/operations', icon: <RocketOutlined />, label: <Link to="/admin/operations">Orders</Link> },
+        { key: '/admin/track-orders', icon: <AimOutlined />, label: <Link to="/admin/track-orders">Track Orders</Link> },
         { key: '/admin/operations?action=add-vehicle', icon: <CarOutlined />, label: <Link to="/admin/operations?action=add-vehicle">Add Vehicle</Link> },
         { key: '/admin/operations?action=add-location', icon: <EnvironmentOutlined />, label: <Link to="/admin/operations?action=add-location">Add Location</Link> },
         { key: '/admin/analytics', icon: <FundOutlined />, label: <Link to="/admin/analytics">Analytics</Link> },

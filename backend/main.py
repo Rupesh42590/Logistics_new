@@ -82,7 +82,8 @@ async def register_company(req: schemas.RegisterCompanyRequest, db: AsyncSession
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Create company
-    company = models.Company(name=req.company_name, description=req.company_description)
+    company = models.Company(name=req.company_name, description=req.company_description,
+                             address=req.company_address, lat=req.company_lat, lng=req.company_lng)
     db.add(company)
     await db.flush()  # Get company.id
     
@@ -129,11 +130,34 @@ async def get_other_companies(
             "id": c.id,
             "name": c.name,
             "description": c.description or "",
-            "label": c.name,
-            "address": c.description or c.name,
+            "address": c.address or c.name,
+            "lat": c.lat,
+            "lng": c.lng,
         }
         for c in companies
     ]
+
+
+@app.get("/companies/me")
+async def get_my_company(
+    db: AsyncSession = Depends(get_db),
+    user: models.User = Depends(get_current_user)
+):
+    """Returns the current user's company details including address/lat/lng."""
+    if not user.company_id:
+        raise HTTPException(404, "No company associated with your account")
+    result = await db.execute(select(models.Company).where(models.Company.id == user.company_id))
+    company = result.scalars().first()
+    if not company:
+        raise HTTPException(404, "Company not found")
+    return {
+        "id": company.id,
+        "name": company.name,
+        "description": company.description or "",
+        "address": company.address or company.name,
+        "lat": company.lat,
+        "lng": company.lng,
+    }
 
 
 @app.post("/join-request")

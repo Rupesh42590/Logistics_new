@@ -33,10 +33,24 @@ async def seed_data():
         # 1. Create the Demo Company
         demo_company = Company(
             name="Demo Logistics Co.",
-            description="Default demo company for seeded users"
+            description="Default demo company for seeded users",
+            address="123 Main St, Bangalore",
+            lat=12.9716,
+            lng=77.5946,
         )
         db.add(demo_company)
         await db.flush()  # get demo_company.id
+
+        # Create a second company so the MSME user has someone to send orders to
+        partner_company = Company(
+            name="Partner Supplies Ltd.",
+            description="Demo partner company",
+            address="456 MG Road, Hyderabad",
+            lat=17.3850,
+            lng=78.4867,
+        )
+        db.add(partner_company)
+        await db.flush()
 
         # 2. Create Users assigned to Demo Company
         users_to_create = [

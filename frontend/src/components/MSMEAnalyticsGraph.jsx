@@ -116,6 +116,7 @@ const MSMEAnalyticsGraph = ({ data }) => {
     };
 
     const chartData = processData(data, timeRange, baseDate);
+    const allZero = chartData.every(d => d.count === 0);
 
     return (
         <Card
@@ -159,7 +160,7 @@ const MSMEAnalyticsGraph = ({ data }) => {
                             contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                         />
                         <Area
-                            type="monotone"
+                            type={allZero ? "linear" : "monotone"}
                             dataKey="count"
                             stroke="#facc15"
                             fillOpacity={1}
